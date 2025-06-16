@@ -20,9 +20,17 @@ public class ServiceProducts {
 
     @Transactional
     public ProductModel create(DataProducts data) {
+        boolean exists = repository.existsByNameAndColorAndSize(data.name(), data.color(), data.size());
+        if (exists) {
+            throw new ResourceNotFoundException("Produto já existente com nome '" + data.name() +
+                    "', cor '" + data.color() +
+                    "' e tamanho '" + data.size() + "'.");
+        }
+
         ProductModel product = new ProductModel(data);
         return repository.save(product);
     }
+
 
     @Transactional
     public ProductModel update(Long id, DataProducts data) {
