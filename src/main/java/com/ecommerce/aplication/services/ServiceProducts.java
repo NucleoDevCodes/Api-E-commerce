@@ -3,7 +3,7 @@ package com.ecommerce.aplication.services;
 import com.ecommerce.aplication.records.DataProducts;
 import com.ecommerce.infra.exceptions.ResourceNotFoundException;
 import com.ecommerce.model.product.ProductModel;
-import com.ecommerce.model.repositorys.ProductoRepository;
+import com.ecommerce.model.repositorys.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +12,9 @@ import java.util.List;
 @Service
 public class ServiceProducts {
 
-    private final ProductoRepository repository;
+    private final ProductRepository repository;
 
-    public ServiceProducts(ProductoRepository repository) {
+    public ServiceProducts(ProductRepository repository) {
         this.repository = repository;
     }
 
