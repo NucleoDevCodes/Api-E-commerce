@@ -1,5 +1,6 @@
-package com.ecommerce.product;
+package com.ecommerce.model.product;
 
+import com.ecommerce.aplication.records.DataProducts;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -34,4 +35,12 @@ public class ProductModel {
 
     @NotBlank(message = "O tamanho é obrigatório")
     private String size;
+
+
+    public  ProductModel(DataProducts data){
+        this.name=data.name();
+        this.price=data.price();
+        this.color= data.color();
+        this.size= data.size();
+    }
 }
