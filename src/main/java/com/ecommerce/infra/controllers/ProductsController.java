@@ -2,7 +2,10 @@ package com.ecommerce.infra.controllers;
 
 import com.ecommerce.aplication.records.DataProducts;
 import com.ecommerce.aplication.services.ServiceProducts;
+import com.ecommerce.model.product.CategoryItem;
+import com.ecommerce.model.product.CategoryType;
 import com.ecommerce.model.product.ProductModel;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,25 +28,50 @@ public class ProductsController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductModel> update(@PathVariable("id") Long id, @RequestBody DataProducts data) {
+    public ResponseEntity<ProductModel> update(@PathVariable Long id, @RequestBody DataProducts data) {
         ProductModel updated = service.update(id, data);
         return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductModel> findById(@PathVariable("id") Long id) {
+    public ResponseEntity<ProductModel> findById(@PathVariable Long id) {
         ProductModel product = service.findById(id);
         return ResponseEntity.ok(product);
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductModel>> findAll() {
-        List<ProductModel> products = service.findAll();
+    public ResponseEntity<List<ProductModel>> findAll(@RequestParam(defaultValue = "0") int page) {
+        List<ProductModel> products = service.findAll(page).getContent();
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/buscarItem")
+    public ResponseEntity<List<ProductModel>> findByItem(
+            @RequestParam CategoryItem item,
+            @RequestParam(defaultValue = "0") int page) {
+        List<ProductModel> products = service.findByItem(item, page).getContent();
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/buscarTipo")
+    public ResponseEntity<List<ProductModel>> findByType(
+            @RequestParam CategoryType type,
+            @RequestParam(defaultValue = "0") int page) {
+        List<ProductModel> products = service.findByType(type, page).getContent();
+        return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/buscarItemTipo")
+    public ResponseEntity<List<ProductModel>> findByItemAndType(
+            @RequestParam CategoryItem item,
+            @RequestParam CategoryType type,
+            @RequestParam(defaultValue = "0") int page) {
+        List<ProductModel> products = service.findByItemAndType(item, type, page).getContent();
         return ResponseEntity.ok(products);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

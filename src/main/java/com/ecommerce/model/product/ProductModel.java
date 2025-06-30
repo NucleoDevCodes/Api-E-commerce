@@ -36,11 +36,20 @@ public class ProductModel {
     @NotBlank(message = "O tamanho é obrigatório")
     private String size;
 
+    @Enumerated(EnumType.STRING)
+    private  CategoryItem item;
+
+    @Enumerated(EnumType.STRING)
+    private  CategoryType type;
+
+
 
     public  ProductModel(DataProducts data){
         this.name=data.name();
         this.price=data.price();
         this.color= data.color();
         this.size= data.size();
+        this.item=data.item();
+        this.type=data.type();
     }
 }
