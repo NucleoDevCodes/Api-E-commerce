@@ -74,7 +74,21 @@ public class ServiceProducts {
                 .orElseThrow(() -> new ResourceNotFoundException("Produto com ID " + id + " não encontrado."));
     }
 
+    public Page<ProductModel> findAll(int page) {
+        return repository.findAll(PageRequest.of(page, 5));
+    }
 
+    public Page<ProductModel> findByItem(CategoryItem item, int page) {
+        return repository.findByItem(item, PageRequest.of(page, 5));
+    }
+
+    public Page<ProductModel> findByType(CategoryType type, int page) {
+        return repository.findByType(type, PageRequest.of(page, 5));
+    }
+
+    public Page<ProductModel> findByItemAndType(CategoryItem item, CategoryType type, int page) {
+        return repository.findByItemAndType(item, type, PageRequest.of(page, 5));
+    }
 
     @Transactional
     public void delete(Long id) {
