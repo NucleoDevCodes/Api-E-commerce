@@ -5,5 +5,5 @@ import com.ecommerce.model.product.CategoryType;
 
 import java.math.BigDecimal;
 
-public record DataProducts(String name, BigDecimal price , String color , String size, CategoryItem item) {
+public record DataProducts(String name, BigDecimal price , String color , String size, CategoryItem item,CategoryType type) {
 }
