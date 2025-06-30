@@ -39,7 +39,8 @@ public class ProductModel {
     @Enumerated(EnumType.STRING)
     private  CategoryItem item;
 
-
+    @Enumerated(EnumType.STRING)
+    private  CategoryType type;
 
 
 
@@ -49,6 +50,6 @@ public class ProductModel {
         this.color= data.color();
         this.size= data.size();
         this.item=data.item();
-
+        this.type=data.type();
     }
 }
