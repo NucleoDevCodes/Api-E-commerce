@@ -47,6 +47,34 @@ public class ProductsController {
 
     }
 
+    @GetMapping("/buscarItem")
+    public ResponseEntity<List<ProductModel>> findByItem(
+            @RequestParam CategoryItem item,
+            @RequestParam(defaultValue = "0") int page) {
+        List<ProductModel> products = service.findByItem(item, page).getContent();
+        return ResponseEntity.ok(products);
+
+    }
+
+    @GetMapping("/buscarTipo")
+    public ResponseEntity<List<ProductModel>> findByType(
+            @RequestParam CategoryType type,
+            @RequestParam(defaultValue = "0") int page) {
+        List<ProductModel> products = service.findByType(type, page).getContent();
+        return ResponseEntity.ok(products);
+
+    }
+
+    @GetMapping("/buscarItemTipo")
+    public ResponseEntity<List<ProductModel>> findByItemAndType(
+            @RequestParam CategoryItem item,
+            @RequestParam CategoryType type,
+            @RequestParam(defaultValue = "0") int page) {
+        List<ProductModel> products = service.findByItemAndType(item, type, page).getContent();
+        return ResponseEntity.ok(products);
+
+    }
+
 
 
     @DeleteMapping("/{id}")
