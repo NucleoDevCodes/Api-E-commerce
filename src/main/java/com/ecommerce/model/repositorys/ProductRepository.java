@@ -15,6 +15,7 @@ public interface ProductRepository extends JpaRepository<ProductModel,Long> {
     boolean existsByNameAndColorAndSize(String name, String color, String size);
     Page<ProductModel> findBySizeIgnoreCase(String size, Pageable pageable);
 
+    Page<ProductModel> findByColorIgnoreCase(String color, Pageable pageable);
 
 
     Page<ProductModel> findByItem(CategoryItem item, Pageable pageable);
