@@ -110,6 +110,20 @@ public class ServiceProducts {
         return repository.findBySizeIgnoreCase(normalizedSize, pageable);
     }
 
+    public Page<ProductModel> findByColor(String color, int page) {
+        String normalizedColor = normalize(color);
+        if (!ALLOWED_COLORS.contains(normalizedColor)) {
+            throw new IllegalArgumentException("Cor '" + color + "' inválida. Permitidas: " + ALLOWED_COLORS);
+        }
+        Pageable pageable = PageRequest.of(page, 5);
+        return repository.findByColorIgnoreCase(normalizedColor, pageable);
+    }
+
+
+
+    private String normalize(String value) {
+        return value == null ? null : value.toUpperCase().trim();
+    }
 
     private void validateProductData(String name, Number price, String color, String size) {
         if (name == null || name.trim().isEmpty()) {
