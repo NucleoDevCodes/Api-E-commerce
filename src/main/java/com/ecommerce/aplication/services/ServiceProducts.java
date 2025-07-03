@@ -9,12 +9,15 @@ import com.ecommerce.model.repositorys.ProductRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class ServiceProducts {
+
 
     private final ProductRepository repository;
 
@@ -97,6 +100,17 @@ public class ServiceProducts {
         repository.delete(existing);
     }
 
+
+    public Page<ProductModel> findBySize(String size, int page) {
+        String normalizedSize = normalize(size);
+        if (!ALLOWED_SIZES.contains(normalizedSize)) {
+            throw new IllegalArgumentException("Tamanho '" + size + "' inválido. Permitidos: " + ALLOWED_SIZES);
+        }
+        Pageable pageable = PageRequest.of(page, 5);
+        return repository.findBySizeIgnoreCase(normalizedSize, pageable);
+    }
+
+
     private void validateProductData(String name, Number price, String color, String size) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("O nome é obrigatório.");
@@ -121,9 +135,5 @@ public class ServiceProducts {
         if (!ALLOWED_SIZES.contains(size)) {
             throw new IllegalArgumentException("Tamanho '" + size + "' inválido. Tamanhos permitidos: " + ALLOWED_SIZES);
         }
-    }
-
-    private String normalize(String value) {
-        return value == null ? null : value.toUpperCase().trim();
     }
 }
