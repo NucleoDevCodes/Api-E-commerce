@@ -83,6 +83,15 @@ public class ProductsController {
         return service.findBySize(tamanho, page);
     }
 
+    @GetMapping("/buscarCor")
+    public Page<ProductModel> getByColor(
+            @RequestParam String cor,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return service.findByColor(cor, page);
+    }
+
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
