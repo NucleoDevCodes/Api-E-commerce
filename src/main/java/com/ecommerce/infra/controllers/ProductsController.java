@@ -75,6 +75,13 @@ public class ProductsController {
 
     }
 
+    @GetMapping("/buscarTamanho")
+    public Page<ProductModel> getBySize(
+            @RequestParam String tamanho,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return service.findBySize(tamanho, page);
+    }
 
 
     @DeleteMapping("/{id}")
