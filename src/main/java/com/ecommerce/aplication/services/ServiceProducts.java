@@ -35,7 +35,7 @@ public class ServiceProducts {
         String normalizedColor = normalize(data.color());
         String normalizedSize = normalize(data.size());
 
-        validateProductData(data.name(), data.price(), normalizedColor, normalizedSize);
+        validateProductData(data.name(), data.price(), normalizedColor, normalizedSize, data.quant());
 
         boolean exists = repository.existsByNameAndColorAndSize(
                 data.name(), normalizedColor, normalizedSize
@@ -48,6 +48,7 @@ public class ServiceProducts {
         ProductModel product = new ProductModel(data);
         product.setColor(normalizedColor);
         product.setSize(normalizedSize);
+        product.setQuant(data.quant());
 
         return repository.save(product);
     }
@@ -57,7 +58,7 @@ public class ServiceProducts {
         String normalizedColor = normalize(data.color());
         String normalizedSize = normalize(data.size());
 
-        validateProductData(data.name(), data.price(), normalizedColor, normalizedSize);
+        validateProductData(data.name(), data.price(), normalizedColor, normalizedSize, data.quant());
 
         ProductModel existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto com ID " + id + " não encontrado."));
@@ -68,6 +69,7 @@ public class ServiceProducts {
         existing.setSize(normalizedSize);
         existing.setItem(data.item());
         existing.setType(data.type());
+        existing.setQuant(data.quant());
 
         return repository.save(existing);
     }
@@ -100,7 +102,6 @@ public class ServiceProducts {
         repository.delete(existing);
     }
 
-
     public Page<ProductModel> findBySize(String size, int page) {
         String normalizedSize = normalize(size);
         if (!ALLOWED_SIZES.contains(normalizedSize)) {
@@ -119,13 +120,26 @@ public class ServiceProducts {
         return repository.findByColorIgnoreCase(normalizedColor, pageable);
     }
 
+    public Page<ProductModel> findAllOrderByPrice(String priceSort, int page) {
+        Sort sort;
 
+        if ("desc".equalsIgnoreCase(priceSort)) {
+            sort = Sort.by("price").descending();
+        } else if ("asc".equalsIgnoreCase(priceSort)) {
+            sort = Sort.by("price").ascending();
+        } else {
+            sort = Sort.by("price").ascending();
+        }
+
+        Pageable pageable = PageRequest.of(page, 5, sort);
+        return repository.findAll(pageable);
+    }
 
     private String normalize(String value) {
         return value == null ? null : value.toUpperCase().trim();
     }
 
-    private void validateProductData(String name, Number price, String color, String size) {
+    private void validateProductData(String name, Number price, String color, String size, Integer quant) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("O nome é obrigatório.");
         }
@@ -140,6 +154,10 @@ public class ServiceProducts {
 
         if (size == null || size.trim().isEmpty()) {
             throw new IllegalArgumentException("O tamanho é obrigatório.");
+        }
+
+        if (quant == null || quant < 1) {
+            throw new IllegalArgumentException("A quantidade deve ser maior ou igual a 1.");
         }
 
         if (!ALLOWED_COLORS.contains(color)) {

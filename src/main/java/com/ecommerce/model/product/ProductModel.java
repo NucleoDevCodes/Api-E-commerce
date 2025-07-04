@@ -2,6 +2,7 @@ package com.ecommerce.model.product;
 
 import com.ecommerce.aplication.records.DataProducts;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -30,6 +31,10 @@ public class ProductModel {
     @NotNull(message = "O preço é obrigatório")
     private BigDecimal price;
 
+    @NotNull(message = "A quantidade é obrigatória")
+    @Min(value = 1, message = "A quantidade não pode ser menor que 1")
+    private Integer  quant;
+
     @NotBlank(message = "A cor é obrigatória")
     private String color;
 
@@ -50,6 +55,7 @@ public class ProductModel {
         this.color= data.color();
         this.size= data.size();
         this.item=data.item();
+        this.quant=data.quant();
         this.type=data.type();
     }
 }
