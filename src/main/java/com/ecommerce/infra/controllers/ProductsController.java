@@ -91,7 +91,13 @@ public class ProductsController {
         return service.findByColor(cor, page);
     }
 
-
+    @GetMapping("/ordenar")
+    public Page<ProductModel> getAllOrderByPrice(
+            @RequestParam(defaultValue = "asc") String priceSort,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return service.findAllOrderByPrice(priceSort, page);
+    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
