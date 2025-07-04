@@ -120,6 +120,14 @@ public class ServiceProducts {
         return repository.findByColorIgnoreCase(normalizedColor, pageable);
     }
 
+    public Page<ProductModel> findByNameContaining(String name, int page) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Termo de busca não pode ser vazio.");
+        }
+        Pageable pageable = PageRequest.of(page, 5);
+        return repository.findByNameContainingIgnoreCase(name.trim(), pageable);
+    }
+
     public Page<ProductModel> findAllOrderByPrice(String priceSort, int page) {
         Sort sort;
 

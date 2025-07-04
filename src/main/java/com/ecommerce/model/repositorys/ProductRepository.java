@@ -17,6 +17,7 @@ public interface ProductRepository extends JpaRepository<ProductModel,Long> {
 
     Page<ProductModel> findByColorIgnoreCase(String color, Pageable pageable);
 
+    Page<ProductModel> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
     Page<ProductModel> findByItem(CategoryItem item, Pageable pageable);
 
