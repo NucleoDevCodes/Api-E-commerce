@@ -91,6 +91,14 @@ public class ProductsController {
         return service.findByColor(cor, page);
     }
 
+    @GetMapping("/buscarNome")
+    public Page<ProductModel> getByName(
+            @RequestParam String name,
+            @RequestParam(defaultValue = "0") int page
+    ) {
+        return service.findByNameContaining(name, page);
+    }
+
     @GetMapping("/ordenar")
     public Page<ProductModel> getAllOrderByPrice(
             @RequestParam(defaultValue = "asc") String priceSort,
