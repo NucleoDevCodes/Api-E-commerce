@@ -56,6 +56,16 @@ public class ProductsController {
 
     }
 
+    @GetMapping("/existe")
+    public ResponseEntity<Boolean> checkIfProductExists(
+            @RequestParam String name,
+            @RequestParam String color,
+            @RequestParam String size
+    ) {
+        boolean exists = service.existsByNameAndColorAndSize(name, color, size);
+        return ResponseEntity.ok(exists);
+    }
+
     @GetMapping("/buscarTipo")
     public ResponseEntity<List<ProductModel>> findByType(
             @RequestParam CategoryType type,
