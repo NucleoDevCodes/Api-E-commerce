@@ -47,7 +47,10 @@ public class ProductModel {
     @Column(name = "tamanho")
     private List<String> sizes;
 
-
+    @ElementCollection
+    @CollectionTable(name = "produto_core", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "cores")
+    private List<String> colors;
 
     public ProductModel(DataProducts data) {
         this.name = data.name();
@@ -56,5 +59,6 @@ public class ProductModel {
         this.item = data.item();
         this.type = data.type();
         this.sizes = data.sizes();
+        this.colors = data.colors();
     }
 }
