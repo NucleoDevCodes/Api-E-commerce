@@ -11,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Table(name = "products")
@@ -33,29 +34,31 @@ public class ProductModel {
 
     @NotNull(message = "A quantidade é obrigatória")
     @Min(value = 1, message = "A quantidade não pode ser menor que 1")
-    private Integer  quant;
-
-    @NotBlank(message = "A cor é obrigatória")
-    private String color;
-
-    @NotBlank(message = "O tamanho é obrigatório")
-    private String size;
+    private Integer quant;
 
     @Enumerated(EnumType.STRING)
-    private  CategoryItem item;
+    private CategoryItem item;
 
     @Enumerated(EnumType.STRING)
-    private  CategoryType type;
+    private CategoryType type;
 
+    @ElementCollection
+    @CollectionTable(name = "produto_tamanho", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "tamanho")
+    private List<String> sizes;
 
+    @ElementCollection
+    @CollectionTable(name = "produto_core", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "cores")
+    private List<String> colors;
 
-    public  ProductModel(DataProducts data){
-        this.name=data.name();
-        this.price=data.price();
-        this.color= data.color();
-        this.size= data.size();
-        this.item=data.item();
-        this.quant=data.quant();
-        this.type=data.type();
+    public ProductModel(DataProducts data) {
+        this.name = data.name();
+        this.price = data.price();
+        this.quant = data.quant();
+        this.item = data.item();
+        this.type = data.type();
+        this.sizes = data.sizes();
+        this.colors = data.colors();
     }
 }
