@@ -4,6 +4,13 @@ import com.ecommerce.model.product.CategoryItem;
 import com.ecommerce.model.product.CategoryType;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-public record DataProducts(String name, BigDecimal price ,Integer quant, String color , String size, CategoryItem item,CategoryType type) {
+public record DataProducts(   String name,
+                              BigDecimal price,
+                              String description,
+                              CategoryItem item,
+                              CategoryType type,
+                              Integer quant,
+                              List<String> sizes) {
 }
