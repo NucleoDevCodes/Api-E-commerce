@@ -15,16 +15,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+
 @Service
 public class ServiceProducts {
 
 
-    private final ProductRepository repository;
 
-    private static final List<String> ALLOWED_SIZES = List.of("PP", "P", "M", "G", "GG", "U");
-    private static final List<String> ALLOWED_COLORS = List.of(
-            "PRETO", "BRANCO", "AZUL", "VERMELHO", "CINZA", "VERDE", "ROSA", "AMARELO"
-    );
+    private final ProductRepository repository;
 
     public ServiceProducts(ProductRepository repository) {
         this.repository = repository;
@@ -32,22 +29,14 @@ public class ServiceProducts {
 
     @Transactional
     public ProductModel create(DataProducts data) {
-        String normalizedColor = normalize(data.color());
-        String normalizedSize = normalize(data.size());
+        List<String> normalizedColors = normalizeList(data.colors());
+        List<String> normalizedSizes = normalizeList(data.sizes());
 
-        validateProductData(data.name(), data.price(), normalizedColor, normalizedSize, data.quant());
-
-        boolean exists = repository.existsByNameAndColorAndSize(
-                data.name(), normalizedColor, normalizedSize
-        );
-        if (exists) {
-            throw new IllegalArgumentException("Produto já existente com nome '" + data.name() +
-                    "', cor '" + normalizedColor + "' e tamanho '" + normalizedSize + "'.");
-        }
+        validateProductData(data.name(), data.price(), normalizedColors, normalizedSizes, data.quant());
 
         ProductModel product = new ProductModel(data);
-        product.setColor(normalizedColor);
-        product.setSize(normalizedSize);
+        product.setColors(normalizedColors);
+        product.setSizes(normalizedSizes);
         product.setQuant(data.quant());
 
         return repository.save(product);
@@ -55,18 +44,18 @@ public class ServiceProducts {
 
     @Transactional
     public ProductModel update(Long id, DataProducts data) {
-        String normalizedColor = normalize(data.color());
-        String normalizedSize = normalize(data.size());
+        List<String> normalizedColors = normalizeList(data.colors());
+        List<String> normalizedSizes = normalizeList(data.sizes());
 
-        validateProductData(data.name(), data.price(), normalizedColor, normalizedSize, data.quant());
+        validateProductData(data.name(), data.price(), normalizedColors, normalizedSizes, data.quant());
 
         ProductModel existing = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto com ID " + id + " não encontrado."));
 
         existing.setName(data.name());
         existing.setPrice(data.price());
-        existing.setColor(normalizedColor);
-        existing.setSize(normalizedSize);
+        existing.setColors(normalizedColors);
+        existing.setSizes(normalizedSizes);
         existing.setItem(data.item());
         existing.setType(data.type());
         existing.setQuant(data.quant());
@@ -102,24 +91,6 @@ public class ServiceProducts {
         repository.delete(existing);
     }
 
-    public Page<ProductModel> findBySize(String size, int page) {
-        String normalizedSize = normalize(size);
-        if (!ALLOWED_SIZES.contains(normalizedSize)) {
-            throw new IllegalArgumentException("Tamanho '" + size + "' inválido. Permitidos: " + ALLOWED_SIZES);
-        }
-        Pageable pageable = PageRequest.of(page, 5);
-        return repository.findBySizeIgnoreCase(normalizedSize, pageable);
-    }
-
-    public Page<ProductModel> findByColor(String color, int page) {
-        String normalizedColor = normalize(color);
-        if (!ALLOWED_COLORS.contains(normalizedColor)) {
-            throw new IllegalArgumentException("Cor '" + color + "' inválida. Permitidas: " + ALLOWED_COLORS);
-        }
-        Pageable pageable = PageRequest.of(page, 5);
-        return repository.findByColorIgnoreCase(normalizedColor, pageable);
-    }
-
     public Page<ProductModel> findByNameContaining(String name, int page) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Termo de busca não pode ser vazio.");
@@ -128,26 +99,64 @@ public class ServiceProducts {
         return repository.findByNameContainingIgnoreCase(name.trim(), pageable);
     }
 
-    public Page<ProductModel> findAllOrderByPrice(String priceSort, int page) {
-        Sort sort;
+    public Page<ProductModel> findBySize(String size, int page) {
+        String normalizedSize = normalize(size);
+        Pageable pageable = PageRequest.of(page, 5);
+        return repository.findBySizesContainingIgnoreCase(normalizedSize, pageable);
+    }
 
-        if ("desc".equalsIgnoreCase(priceSort)) {
-            sort = Sort.by("price").descending();
-        } else if ("asc".equalsIgnoreCase(priceSort)) {
-            sort = Sort.by("price").ascending();
-        } else {
-            sort = Sort.by("price").ascending();
-        }
+    public Page<ProductModel> findByColor(String color, int page) {
+        String normalizedColor = normalize(color);
+        Pageable pageable = PageRequest.of(page, 5);
+        return repository.findByColorsContainingIgnoreCase(normalizedColor, pageable);
+    }
+
+    public Page<ProductModel> findAllOrderByPrice(String priceSort, int page) {
+        Sort sort = "desc".equalsIgnoreCase(priceSort)
+                ? Sort.by("price").descending()
+                : Sort.by("price").ascending();
 
         Pageable pageable = PageRequest.of(page, 5, sort);
         return repository.findAll(pageable);
     }
 
-    private String normalize(String value) {
-        return value == null ? null : value.toUpperCase().trim();
+    public boolean existsByNameAndColorAndSize(String name, String color, String size) {
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Nome é obrigatório.");
+        }
+
+        if (color == null || color.trim().isEmpty()) {
+            throw new IllegalArgumentException("Cor é obrigatória.");
+        }
+
+        if (size == null || size.trim().isEmpty()) {
+            throw new IllegalArgumentException("Tamanho é obrigatório.");
+        }
+
+        return repository.existsByNameAndColorAndSize(
+                name.trim(),
+                color.trim().toUpperCase(),
+                size.trim().toUpperCase()
+        );
     }
 
-    private void validateProductData(String name, Number price, String color, String size, Integer quant) {
+    private List<String> normalizeList(List<String> input) {
+        if (input == null || input.isEmpty()) {
+            throw new IllegalArgumentException("A lista não pode estar vazia.");
+        }
+
+        return input.stream()
+                .filter(v -> v != null && !v.trim().isEmpty())
+                .map(v -> v.trim().toUpperCase())
+                .distinct()
+                .toList();
+    }
+
+    private String normalize(String value) {
+        return value == null ? null : value.trim().toUpperCase();
+    }
+
+    private void validateProductData(String name, Number price, List<String> colors, List<String> sizes, Integer quant) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("O nome é obrigatório.");
         }
@@ -156,24 +165,16 @@ public class ServiceProducts {
             throw new IllegalArgumentException("O preço deve ser maior que zero.");
         }
 
-        if (color == null || color.trim().isEmpty()) {
-            throw new IllegalArgumentException("A cor é obrigatória.");
+        if (colors == null || colors.isEmpty()) {
+            throw new IllegalArgumentException("O produto precisa ter ao menos uma cor.");
         }
 
-        if (size == null || size.trim().isEmpty()) {
-            throw new IllegalArgumentException("O tamanho é obrigatório.");
+        if (sizes == null || sizes.isEmpty()) {
+            throw new IllegalArgumentException("O produto precisa ter ao menos um tamanho.");
         }
 
         if (quant == null || quant < 1) {
             throw new IllegalArgumentException("A quantidade deve ser maior ou igual a 1.");
-        }
-
-        if (!ALLOWED_COLORS.contains(color)) {
-            throw new IllegalArgumentException("Cor '" + color + "' inválida. Cores permitidas: " + ALLOWED_COLORS);
-        }
-
-        if (!ALLOWED_SIZES.contains(size)) {
-            throw new IllegalArgumentException("Tamanho '" + size + "' inválido. Tamanhos permitidos: " + ALLOWED_SIZES);
         }
     }
 }
