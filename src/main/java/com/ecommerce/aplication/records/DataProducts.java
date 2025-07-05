@@ -12,5 +12,6 @@ public record DataProducts(   String name,
                               CategoryItem item,
                               CategoryType type,
                               Integer quant,
-                              List<String> sizes) {
+                              List<String> sizes,
+                              List<String> colors) {
 }
