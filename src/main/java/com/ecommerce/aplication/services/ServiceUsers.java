@@ -68,4 +68,12 @@ public class ServiceUsers implements UserDetailsService {
     public void delete(Long id) {
         usersRepository.deleteById(id);
     }
+
+    public java.util.Optional<Users> findById(Long id) {
+        return usersRepository.findById(id);
+    }
+
+    public Users save(Users user) {
+        return usersRepository.save(user);
+    }
 }
