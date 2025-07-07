@@ -1,8 +1,10 @@
 package com.ecommerce.infra.controllers;
 
 import com.ecommerce.aplication.records.DataPasswordChanged;
+import com.ecommerce.aplication.records.DataPublicProfile;
 import com.ecommerce.aplication.records.DataUsers;
 import com.ecommerce.aplication.services.ServiceUsers;
+import com.ecommerce.infra.exceptions.RegraNegocio;
 import com.ecommerce.model.users.Users;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api")
@@ -54,5 +57,34 @@ public class LoginController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         serviceUsers.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/usuario/{id}")
+    public ResponseEntity<Void> updateProfile(
+            @PathVariable("id") Long id,
+            @RequestBody DataUsers data,
+            @AuthenticationPrincipal Users requester
+    ) {
+        if (!id.equals(requester.getId())) {
+            throw new RegraNegocio("Somente o dono do perfil pode editar.");
+        }
+
+        Users user = serviceUsers.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        user.setName(data.name());
+        serviceUsers.save(user);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/usuario/{id}")
+    public ResponseEntity<DataPublicProfile> getPublicProfile(@PathVariable Long id) {
+        Users user = serviceUsers.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        var profile = new DataPublicProfile(user.getId(), user.getUsername(), user.getName());
+
+        return ResponseEntity.ok(profile);
     }
 }
