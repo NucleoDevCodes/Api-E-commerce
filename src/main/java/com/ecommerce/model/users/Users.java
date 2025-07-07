@@ -1,5 +1,6 @@
 package com.ecommerce.model.users;
 
+import com.ecommerce.model.favorite.FavoriteProducts;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 @Getter
@@ -19,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "Usuarios")
+@Table(name = "usuarios")
 public class Users implements UserDetails {
 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,6 +33,8 @@ public class Users implements UserDetails {
     private String name;
 
     @NotBlank
+    @NotBlank
+    @Column(name = "email", nullable = false)
     private String email;
 
     @NotBlank
@@ -39,6 +43,7 @@ public class Users implements UserDetails {
 
     @Enumerated(EnumType.STRING)
     @NotNull
+    @Column(name = "role", nullable = false)
     private TypeRole role;
 
     @Column(name = "token")
@@ -46,6 +51,9 @@ public class Users implements UserDetails {
 
     @Column(name = "expiracao_token")
     private LocalDateTime expiracaoToken;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FavoriteProducts> favoriteProducts = new ArrayList<>();
 
 
     @Override
