@@ -114,12 +114,14 @@ public class ProductsController {
 
 
     @GetMapping("/ordenar")
-    public Page<ProductModel> getAllOrderByPrice(
+    public ResponseEntity<List<ProductModel>> getAllOrderByPrice(
             @RequestParam(defaultValue = "asc") String priceSort,
             @RequestParam(defaultValue = "0") int page
     ) {
-        return service.findAllOrderByPrice(priceSort, page);
+        List<ProductModel> products = service.findAllOrderByPrice(priceSort, page).getContent();
+        return ResponseEntity.ok(products);
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
