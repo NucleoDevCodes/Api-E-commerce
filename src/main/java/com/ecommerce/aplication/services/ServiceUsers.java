@@ -5,10 +5,6 @@ import com.ecommerce.aplication.records.DataUsers;
 import com.ecommerce.infra.exceptions.RegraNegocio;
 import com.ecommerce.model.repositorys.UsersRepositroy;
 import com.ecommerce.model.users.Users;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -31,8 +27,8 @@ public class ServiceUsers implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return usersRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com e-mail: " + email));
+        return usersRepository.findByEmailAndAtivoTrue(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado ou inativo com e-mail: " + email));
     }
 
     @Transactional
@@ -48,11 +44,16 @@ public class ServiceUsers implements UserDetailsService {
         user.setEmail(data.email());
         user.setPassword(encryptedPassword);
         user.setRole(data.role());
+        user.setAtivo(true);
 
         return usersRepository.save(user).getId();
     }
 
     public void changePassword(DataPasswordChanged data, Users user) {
+        if (!user.isAtivo()) {
+            throw new RegraNegocio("Usuário inativo não pode alterar senha.");
+        }
+
         if (!encoder.matches(data.currentPassword(), user.getPassword())) {
             throw new RegraNegocio("Senha atual está incorreta.");
         }
@@ -65,15 +66,23 @@ public class ServiceUsers implements UserDetailsService {
         usersRepository.save(user);
     }
 
+    @Transactional
     public void delete(Long id) {
-        usersRepository.deleteById(id);
+        Users user = usersRepository.findById(id)
+                .orElseThrow(() -> new RegraNegocio("Usuário não encontrado."));
+        if (!user.isAtivo()) {
+            throw new RegraNegocio("Usuário já está inativo.");
+        }
+        user.setAtivo(false);
+        usersRepository.save(user);
     }
 
     public java.util.Optional<Users> findById(Long id) {
-        return usersRepository.findById(id);
+        return usersRepository.findByIdAndAtivoTrue(id);
     }
 
     public Users save(Users user) {
+        if (user == null) throw new IllegalArgumentException("Usuário não pode ser nulo");
         return usersRepository.save(user);
     }
 }
