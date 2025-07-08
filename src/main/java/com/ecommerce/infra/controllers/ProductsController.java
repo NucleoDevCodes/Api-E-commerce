@@ -95,11 +95,12 @@ public class ProductsController {
     }
 
     @GetMapping("/buscarCor")
-    public Page<ProductModel> getByColor(
+    public ResponseEntity<List<ProductModel>> getByColor(
             @RequestParam String cor,
             @RequestParam(defaultValue = "0") int page
     ) {
-        return service.findByColor(cor, page);
+        List<ProductModel> products = service.findByColor(cor, page).getContent();
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/buscarNome")
@@ -117,7 +118,6 @@ public class ProductsController {
     ) {
         return service.findAllOrderByPrice(priceSort, page);
     }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
