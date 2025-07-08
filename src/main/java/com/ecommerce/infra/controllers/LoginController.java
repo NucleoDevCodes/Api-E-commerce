@@ -53,10 +53,16 @@ public class LoginController {
         return ResponseEntity.noContent().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        serviceUsers.delete(id);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/usuario/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+        try {
+            serviceUsers.delete(id);
+            return ResponseEntity.noContent().build();
+        } catch (RegraNegocio e) {
+            return ResponseEntity.badRequest().body(null);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/usuario/{id}")
