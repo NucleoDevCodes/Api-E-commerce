@@ -86,11 +86,12 @@ public class ProductsController {
     }
 
     @GetMapping("/buscarTamanho")
-    public Page<ProductModel> getBySize(
+    public ResponseEntity<List<ProductModel>> getBySize(
             @RequestParam String tamanho,
             @RequestParam(defaultValue = "0") int page
     ) {
-        return service.findBySize(tamanho, page);
+        List<ProductModel> products = service.findBySize(tamanho, page).getContent();
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/buscarCor")
