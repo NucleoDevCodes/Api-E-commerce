@@ -86,35 +86,40 @@ public class ProductsController {
     }
 
     @GetMapping("/buscarTamanho")
-    public Page<ProductModel> getBySize(
+    public ResponseEntity<List<ProductModel>> getBySize(
             @RequestParam String tamanho,
             @RequestParam(defaultValue = "0") int page
     ) {
-        return service.findBySize(tamanho, page);
+        List<ProductModel> products = service.findBySize(tamanho, page).getContent();
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/buscarCor")
-    public Page<ProductModel> getByColor(
+    public ResponseEntity<List<ProductModel>> getByColor(
             @RequestParam String cor,
             @RequestParam(defaultValue = "0") int page
     ) {
-        return service.findByColor(cor, page);
+        List<ProductModel> products = service.findByColor(cor, page).getContent();
+        return ResponseEntity.ok(products);
     }
 
     @GetMapping("/buscarNome")
-    public Page<ProductModel> getByName(
+    public ResponseEntity<List<ProductModel>> getByName(
             @RequestParam String name,
             @RequestParam(defaultValue = "0") int page
     ) {
-        return service.findByNameContaining(name, page);
+        List<ProductModel> products = service.findByNameContaining(name, page).getContent();
+        return ResponseEntity.ok(products);
     }
 
+
     @GetMapping("/ordenar")
-    public Page<ProductModel> getAllOrderByPrice(
+    public ResponseEntity<List<ProductModel>> getAllOrderByPrice(
             @RequestParam(defaultValue = "asc") String priceSort,
             @RequestParam(defaultValue = "0") int page
     ) {
-        return service.findAllOrderByPrice(priceSort, page);
+        List<ProductModel> products = service.findAllOrderByPrice(priceSort, page).getContent();
+        return ResponseEntity.ok(products);
     }
 
     @DeleteMapping("/{id}")
