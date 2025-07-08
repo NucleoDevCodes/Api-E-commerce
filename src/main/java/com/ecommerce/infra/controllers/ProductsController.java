@@ -104,12 +104,14 @@ public class ProductsController {
     }
 
     @GetMapping("/buscarNome")
-    public Page<ProductModel> getByName(
+    public ResponseEntity<List<ProductModel>> getByName(
             @RequestParam String name,
             @RequestParam(defaultValue = "0") int page
     ) {
-        return service.findByNameContaining(name, page);
+        List<ProductModel> products = service.findByNameContaining(name, page).getContent();
+        return ResponseEntity.ok(products);
     }
+
 
     @GetMapping("/ordenar")
     public Page<ProductModel> getAllOrderByPrice(
