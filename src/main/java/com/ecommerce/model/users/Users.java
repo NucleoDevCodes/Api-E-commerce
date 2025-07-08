@@ -52,6 +52,10 @@ public class Users implements UserDetails {
     @Column(name = "expiracao_token")
     private LocalDateTime expiracaoToken;
 
+    @Column(nullable = false)
+    private boolean ativo = true;
+
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FavoriteProducts> favoriteProducts = new ArrayList<>();
 
