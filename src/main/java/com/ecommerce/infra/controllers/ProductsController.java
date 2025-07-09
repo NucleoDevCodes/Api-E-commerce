@@ -1,6 +1,7 @@
 package com.ecommerce.infra.controllers;
 
 import com.ecommerce.aplication.records.DataProducts;
+import com.ecommerce.aplication.records.DataProductsResponse;
 import com.ecommerce.aplication.services.ServiceProducts;
 import com.ecommerce.model.product.CategoryItem;
 import com.ecommerce.model.product.CategoryType;
@@ -22,36 +23,36 @@ public class ProductsController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductModel> create(@RequestBody DataProducts data) {
-        ProductModel created = service.create(data);
+    public ResponseEntity<DataProductsResponse> create(@RequestBody DataProducts data) {
+        DataProductsResponse created = service.create(data);
         return new ResponseEntity<>(created, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductModel> update(@PathVariable Long id, @RequestBody DataProducts data) {
-        ProductModel updated = service.update(id, data);
+    public ResponseEntity<DataProductsResponse> update(@PathVariable Long id, @RequestBody DataProducts data) {
+        DataProductsResponse updated = service.update(id, data);
         return ResponseEntity.ok(updated);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductModel> findById(@PathVariable Long id) {
-        ProductModel product = service.findById(id);
+    public ResponseEntity<DataProductsResponse> findById(@PathVariable Long id) {
+        DataProductsResponse product = service.findById(id);
         return ResponseEntity.ok(product);
 
     }
 
     @GetMapping
-    public ResponseEntity<List<ProductModel>> findAll(@RequestParam(defaultValue = "0") int page) {
-        List<ProductModel> products = service.findAll(page).getContent();
+    public ResponseEntity<List<DataProductsResponse>> findAll(@RequestParam(defaultValue = "0") int page) {
+        List<DataProductsResponse> products = service.findAll(page).getContent();
         return ResponseEntity.ok(products);
 
     }
 
     @GetMapping("/buscarItem")
-    public ResponseEntity<List<ProductModel>> findByItem(
+    public ResponseEntity<List<DataProductsResponse>> findByItem(
             @RequestParam CategoryItem item,
             @RequestParam(defaultValue = "0") int page) {
-        List<ProductModel> products = service.findByItem(item, page).getContent();
+        List<DataProductsResponse> products = service.findByItem(item, page).getContent();
         return ResponseEntity.ok(products);
 
     }
@@ -67,58 +68,58 @@ public class ProductsController {
     }
 
     @GetMapping("/buscarTipo")
-    public ResponseEntity<List<ProductModel>> findByType(
+    public ResponseEntity<List<DataProductsResponse>> findByType(
             @RequestParam CategoryType type,
             @RequestParam(defaultValue = "0") int page) {
-        List<ProductModel> products = service.findByType(type, page).getContent();
+        List<DataProductsResponse> products = service.findByType(type, page).getContent();
         return ResponseEntity.ok(products);
 
     }
 
     @GetMapping("/buscarItemTipo")
-    public ResponseEntity<List<ProductModel>> findByItemAndType(
+    public ResponseEntity<List<DataProductsResponse>> findByItemAndType(
             @RequestParam CategoryItem item,
             @RequestParam CategoryType type,
             @RequestParam(defaultValue = "0") int page) {
-        List<ProductModel> products = service.findByItemAndType(item, type, page).getContent();
+        List<DataProductsResponse> products = service.findByItemAndType(item, type, page).getContent();
         return ResponseEntity.ok(products);
 
     }
 
     @GetMapping("/buscarTamanho")
-    public ResponseEntity<List<ProductModel>> getBySize(
+    public ResponseEntity<List<DataProductsResponse>> getBySize(
             @RequestParam String tamanho,
             @RequestParam(defaultValue = "0") int page
     ) {
-        List<ProductModel> products = service.findBySize(tamanho, page).getContent();
+        List<DataProductsResponse> products = service.findBySize(tamanho, page).getContent();
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/buscarCor")
-    public ResponseEntity<List<ProductModel>> getByColor(
+    public ResponseEntity<List<DataProductsResponse>> getByColor(
             @RequestParam String cor,
             @RequestParam(defaultValue = "0") int page
     ) {
-        List<ProductModel> products = service.findByColor(cor, page).getContent();
+        List<DataProductsResponse> products = service.findByColor(cor, page).getContent();
         return ResponseEntity.ok(products);
     }
 
     @GetMapping("/buscarNome")
-    public ResponseEntity<List<ProductModel>> getByName(
+    public ResponseEntity<List<DataProductsResponse>> getByName(
             @RequestParam String name,
             @RequestParam(defaultValue = "0") int page
     ) {
-        List<ProductModel> products = service.findByNameContaining(name, page).getContent();
+        List<DataProductsResponse> products = service.findByNameContaining(name, page).getContent();
         return ResponseEntity.ok(products);
     }
 
 
     @GetMapping("/ordenar")
-    public ResponseEntity<List<ProductModel>> getAllOrderByPrice(
+    public ResponseEntity<List<DataProductsResponse>> getAllOrderByPrice(
             @RequestParam(defaultValue = "asc") String priceSort,
             @RequestParam(defaultValue = "0") int page
     ) {
-        List<ProductModel> products = service.findAllOrderByPrice(priceSort, page).getContent();
+        List<DataProductsResponse> products = service.findAllOrderByPrice(priceSort, page).getContent();
         return ResponseEntity.ok(products);
     }
 
