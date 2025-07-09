@@ -3,6 +3,10 @@ package com.ecommerce.model.product;
 public enum CategoryType {
     MASCULINO,
     FEMININO,
+    INFANTIL,
+    UNISSEX,
+    CALÇADOS,
     LANÇAMENTOS,
-    CALÇADOS
+    PROMOÇÕES,
+    MAIS_VENDIDOS
 }
