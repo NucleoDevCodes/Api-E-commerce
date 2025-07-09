@@ -1,6 +1,7 @@
 package com.ecommerce.aplication.services;
 
 import com.ecommerce.aplication.records.DataProducts;
+import com.ecommerce.aplication.records.DataProductsResponse;
 import com.ecommerce.infra.exceptions.ResourceNotFoundException;
 import com.ecommerce.model.product.CategoryItem;
 import com.ecommerce.model.product.CategoryType;
@@ -27,8 +28,21 @@ public class ServiceProducts {
         this.repository = repository;
     }
 
+    private DataProductsResponse responseDto(ProductModel product){
+        return new DataProductsResponse(
+                product.getId(),
+                product.getName(),
+                product.getPrice(),
+                product.getQuant(),
+                product.getItem(),
+                product.getType(),
+                product.getSizes(),
+                product.getColors()
+        );
+    }
+
     @Transactional
-    public ProductModel create(DataProducts data) {
+    public DataProductsResponse create(DataProducts data) {
         List<String> normalizedColors = normalizeList(data.colors());
         List<String> normalizedSizes = normalizeList(data.sizes());
 
@@ -39,11 +53,12 @@ public class ServiceProducts {
         product.setSizes(normalizedSizes);
         product.setQuant(data.quant());
 
-        return repository.save(product);
+         ProductModel saved=repository.save(product);
+        return responseDto(saved);
     }
 
     @Transactional
-    public ProductModel update(Long id, DataProducts data) {
+    public DataProductsResponse update(Long id, DataProducts data) {
         List<String> normalizedColors = normalizeList(data.colors());
         List<String> normalizedSizes = normalizeList(data.sizes());
 
@@ -60,28 +75,31 @@ public class ServiceProducts {
         existing.setType(data.type());
         existing.setQuant(data.quant());
 
-        return repository.save(existing);
+        ProductModel saved= repository.save(existing);
+
+        return responseDto(saved);
     }
 
-    public ProductModel findById(Long id) {
-        return repository.findById(id)
+    public DataProductsResponse findById(Long id) {
+        ProductModel model= repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Produto com ID " + id + " não encontrado."));
+        return responseDto(model);
     }
 
-    public Page<ProductModel> findAll(int page) {
-        return repository.findAll(PageRequest.of(page, 5));
+    public Page<DataProductsResponse> findAll(int page) {
+        return repository.findAll(PageRequest.of(page, 5)).map(this::responseDto);
     }
 
-    public Page<ProductModel> findByItem(CategoryItem item, int page) {
-        return repository.findByItem(item, PageRequest.of(page, 5));
+    public Page<DataProductsResponse> findByItem(CategoryItem item, int page) {
+        return repository.findByItem(item, PageRequest.of(page, 5)).map(this::responseDto);
     }
 
-    public Page<ProductModel> findByType(CategoryType type, int page) {
-        return repository.findByType(type, PageRequest.of(page, 5));
+    public Page<DataProductsResponse> findByType(CategoryType type, int page) {
+        return repository.findByType(type, PageRequest.of(page, 5)).map(this::responseDto);
     }
 
-    public Page<ProductModel> findByItemAndType(CategoryItem item, CategoryType type, int page) {
-        return repository.findByItemAndType(item, type, PageRequest.of(page, 5));
+    public Page<DataProductsResponse> findByItemAndType(CategoryItem item, CategoryType type, int page) {
+        return repository.findByItemAndType(item, type, PageRequest.of(page, 5)).map(this::responseDto);
     }
 
     @Transactional
@@ -91,33 +109,33 @@ public class ServiceProducts {
         repository.delete(existing);
     }
 
-    public Page<ProductModel> findByNameContaining(String name, int page) {
+    public Page<DataProductsResponse> findByNameContaining(String name, int page) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Termo de busca não pode ser vazio.");
         }
         Pageable pageable = PageRequest.of(page, 5);
-        return repository.findByNameContainingIgnoreCase(name.trim(), pageable);
+        return repository.findByNameContainingIgnoreCase(name.trim(), pageable).map(this::responseDto);
     }
 
-    public Page<ProductModel> findBySize(String size, int page) {
+    public Page<DataProductsResponse> findBySize(String size, int page) {
         String normalizedSize = normalize(size);
         Pageable pageable = PageRequest.of(page, 5);
-        return repository.findBySizesContainingIgnoreCase(normalizedSize, pageable);
+        return repository.findBySizesContainingIgnoreCase(normalizedSize, pageable).map(this::responseDto);
     }
 
-    public Page<ProductModel> findByColor(String color, int page) {
+    public Page<DataProductsResponse> findByColor(String color, int page) {
         String normalizedColor = normalize(color);
         Pageable pageable = PageRequest.of(page, 5);
-        return repository.findByColorsContainingIgnoreCase(normalizedColor, pageable);
+        return repository.findByColorsContainingIgnoreCase(normalizedColor, pageable).map(this::responseDto);
     }
 
-    public Page<ProductModel> findAllOrderByPrice(String priceSort, int page) {
+    public Page<DataProductsResponse> findAllOrderByPrice(String priceSort, int page) {
         Sort sort = "desc".equalsIgnoreCase(priceSort)
                 ? Sort.by("price").descending()
                 : Sort.by("price").ascending();
 
         Pageable pageable = PageRequest.of(page, 5, sort);
-        return repository.findAll(pageable);
+        return repository.findAll(pageable).map(this::responseDto);
     }
 
     public boolean existsByNameAndColorAndSize(String name, String color, String size) {
