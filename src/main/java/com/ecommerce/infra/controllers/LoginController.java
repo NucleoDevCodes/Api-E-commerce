@@ -2,6 +2,7 @@ package com.ecommerce.infra.controllers;
 
 import com.ecommerce.aplication.records.DataPasswordChanged;
 import com.ecommerce.aplication.records.DataPublicProfile;
+import com.ecommerce.aplication.records.DataUserResponse;
 import com.ecommerce.aplication.records.DataUsers;
 import com.ecommerce.aplication.services.ServiceUsers;
 import com.ecommerce.infra.exceptions.RegraNegocio;
@@ -33,7 +34,7 @@ public class LoginController {
         return new ResponseEntity<>(userId, HttpStatus.CREATED);
     }
     @PostMapping("/login")
-    public ResponseEntity<Users> login(@RequestBody DataUsers data, HttpServletRequest request) {
+    public ResponseEntity<DataUserResponse> login(@RequestBody DataUsers data, HttpServletRequest request) {
         Authentication auth = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(data.email(), data.password())
         );
@@ -42,7 +43,15 @@ public class LoginController {
 
         request.getSession().setAttribute("USER_EMAIL", user.getEmail());
 
-        return ResponseEntity.ok(user);
+        DataUserResponse userResponse = new DataUserResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getName(),
+                user.getEmail(),
+                user.getRole()
+        );
+
+        return ResponseEntity.ok(userResponse);
     }
 
     @PutMapping("/change-password")
