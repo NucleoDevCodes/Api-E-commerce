@@ -1,10 +1,13 @@
 package com.ecommerce.infra.controllers;
 
 import com.ecommerce.aplication.records.DataFavoriteProductRequest;
+import com.ecommerce.aplication.records.DataFavoriteProductResponse;
 import com.ecommerce.aplication.services.ServiceFavoriteProducts;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/favoritos")
@@ -30,7 +33,7 @@ public class FavoriteController {
     }
 
     @GetMapping
-    public ResponseEntity<?> list(@AuthenticationPrincipal(expression = "id") Long userId) {
+    public ResponseEntity<List<DataFavoriteProductResponse>> list(@AuthenticationPrincipal(expression = "id") Long userId) {
         return ResponseEntity.ok(service.list(userId));
     }
 }

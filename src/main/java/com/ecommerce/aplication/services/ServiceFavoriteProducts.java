@@ -44,10 +44,17 @@ public class ServiceFavoriteProducts {
         favoRepo.delete(favo);
     }
 
+    private DataFavoriteProductResponse toResponseDTO(FavoriteProducts fav) {
+        return new DataFavoriteProductResponse(
+                fav.getId(),
+                fav.getUser().getName(),
+                fav.getProduct().getName()
+        );
+    }
+
     public List<DataFavoriteProductResponse> list(Long userId) {
         return favoRepo.findByUserId(userId).stream()
-                .map(f ->
-                        new DataFavoriteProductResponse(f.getId(), f.getProduct().getId(), f.getProduct().getName()))
+                .map(this::toResponseDTO)
                 .collect(Collectors.toList());
     }
 }
