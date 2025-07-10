@@ -2,13 +2,16 @@ package com.ecommerce.aplication.services;
 
 import com.ecommerce.aplication.records.DataFavoriteProductRequest;
 import com.ecommerce.aplication.records.DataFavoriteProductResponse;
+import com.ecommerce.infra.exceptions.BusinessRuleException;
+import com.ecommerce.infra.exceptions.ResourceNotFoundException;
 import com.ecommerce.model.favorite.FavoriteProducts;
 import com.ecommerce.model.product.ProductModel;
 import com.ecommerce.model.repositorys.FavoriteProductsRepository;
 import com.ecommerce.model.repositorys.ProductRepository;
 import com.ecommerce.model.repositorys.UsersRepositroy;
 import com.ecommerce.model.users.Users;
-import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class ServiceFavoriteProducts {
+    private static final Logger logger = LoggerFactory.getLogger(ServiceFavoriteProducts.class);
+
     private final FavoriteProductsRepository favoRepo;
     private final ProductRepository productRepo;
     private final UsersRepositroy userRepo;
@@ -27,21 +32,30 @@ public class ServiceFavoriteProducts {
     }
 
     public void add(Long userId, DataFavoriteProductRequest request) {
-        if (favoRepo.findByUserIdAndProductId(userId, request.productId()).isPresent())
-            throw new IllegalArgumentException("Produto já nos favoritos");
+        logger.info("Usuário {} tentando adicionar produto {} aos favoritos", userId, request.productId());
 
-        Users user = userRepo.findById(userId).orElseThrow();
-        ProductModel product = productRepo.findById(request.productId()).orElseThrow();
+        if (favoRepo.findByUserIdAndProductId(userId, request.productId()).isPresent()) {
+            logger.warn("Produto {} já está nos favoritos do usuário {}", request.productId(), userId);
+            throw new BusinessRuleException("Produto já está nos favoritos.");
+        }
+
+        Users user = userRepo.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado. ID: " + userId));
+        ProductModel product = productRepo.findById(request.productId())
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado. ID: " + request.productId()));
 
         favoRepo.save(new FavoriteProducts(null, user, product, null));
+        logger.info("Produto {} adicionado aos favoritos do usuário {}", request.productId(), userId);
     }
 
     public void remove(Long userId, Long productId) {
-        FavoriteProducts favo =
-                favoRepo.findByUserIdAndProductId(userId, productId)
-                        .orElseThrow(() -> new EntityNotFoundException("Produto não está nos favoritos"));
+        logger.info("Usuário {} tentando remover produto {} dos favoritos", userId, productId);
 
-        favoRepo.delete(favo);
+        FavoriteProducts fav = favoRepo.findByUserIdAndProductId(userId, productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não está nos favoritos"));
+
+        favoRepo.delete(fav);
+        logger.info("Produto {} removido dos favoritos do usuário {}", productId, userId);
     }
 
     private DataFavoriteProductResponse toResponseDTO(FavoriteProducts fav) {
@@ -53,6 +67,7 @@ public class ServiceFavoriteProducts {
     }
 
     public List<DataFavoriteProductResponse> list(Long userId) {
+        logger.debug("Listando favoritos do usuário {}", userId);
         return favoRepo.findByUserId(userId).stream()
                 .map(this::toResponseDTO)
                 .collect(Collectors.toList());
