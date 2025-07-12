@@ -1,7 +1,7 @@
 package com.ecommerce.infra.controllers;
 
-import com.ecommerce.aplication.records.DataProducts;
-import com.ecommerce.aplication.records.DataProductsResponse;
+import com.ecommerce.aplication.records.ProductsRecords.DataProducts;
+import com.ecommerce.aplication.records.ProductsRecords.DataProductsResponse;
 import com.ecommerce.aplication.services.ServiceProducts;
 import com.ecommerce.model.product.CategoryItem;
 import com.ecommerce.model.product.CategoryType;
