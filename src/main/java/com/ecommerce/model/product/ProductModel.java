@@ -1,6 +1,6 @@
 package com.ecommerce.model.product;
 
-import com.ecommerce.aplication.records.DataProducts;
+import com.ecommerce.aplication.records.ProductsRecords.DataProducts;
 import com.ecommerce.model.favorite.FavoriteProducts;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
