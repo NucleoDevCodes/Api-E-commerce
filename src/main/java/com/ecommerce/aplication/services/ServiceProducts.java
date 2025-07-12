@@ -1,7 +1,7 @@
 package com.ecommerce.aplication.services;
 
-import com.ecommerce.aplication.records.DataProducts;
-import com.ecommerce.aplication.records.DataProductsResponse;
+import com.ecommerce.aplication.records.ProductsRecords.DataProducts;
+import com.ecommerce.aplication.records.ProductsRecords.DataProductsResponse;
 import com.ecommerce.infra.exceptions.BusinessRuleException;
 import com.ecommerce.infra.exceptions.ResourceNotFoundException;
 import com.ecommerce.model.product.CategoryItem;
