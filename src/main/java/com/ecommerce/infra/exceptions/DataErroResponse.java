@@ -1,4 +1,4 @@
-package com.ecommerce.aplication.records;
+package com.ecommerce.infra.exceptions;
 
 import java.time.LocalDateTime;
 

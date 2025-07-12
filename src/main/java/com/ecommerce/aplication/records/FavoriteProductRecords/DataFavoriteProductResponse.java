@@ -1,4 +1,4 @@
-package com.ecommerce.aplication.records;
+package com.ecommerce.aplication.records.FavoriteProductRecords;
 
 import java.util.UUID;
 

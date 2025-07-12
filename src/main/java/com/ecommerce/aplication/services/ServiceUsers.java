@@ -1,7 +1,7 @@
 package com.ecommerce.aplication.services;
 
-import com.ecommerce.aplication.records.DataPasswordChanged;
-import com.ecommerce.aplication.records.DataUsers;
+import com.ecommerce.aplication.records.UsersRecords.DataPasswordChanged;
+import com.ecommerce.aplication.records.UsersRecords.DataUsers;
 import com.ecommerce.infra.exceptions.BusinessRuleException;
 import com.ecommerce.model.repositorys.UsersRepositroy;
 import com.ecommerce.model.users.Users;

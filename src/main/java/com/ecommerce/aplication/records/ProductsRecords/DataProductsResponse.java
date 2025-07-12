@@ -1,4 +1,4 @@
-package com.ecommerce.aplication.records;
+package com.ecommerce.aplication.records.ProductsRecords;
 
 import com.ecommerce.model.product.CategoryItem;
 import com.ecommerce.model.product.CategoryType;

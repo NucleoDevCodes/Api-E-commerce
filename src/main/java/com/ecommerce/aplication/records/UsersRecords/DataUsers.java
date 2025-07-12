@@ -1,4 +1,4 @@
-package com.ecommerce.aplication.records;
+package com.ecommerce.aplication.records.UsersRecords;
 
 import com.ecommerce.model.users.TypeRole;
 
