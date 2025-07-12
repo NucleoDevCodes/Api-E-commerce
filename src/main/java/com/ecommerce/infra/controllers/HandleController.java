@@ -1,6 +1,6 @@
 package com.ecommerce.infra.controllers;
 
-import com.ecommerce.aplication.records.DataErroResponse;
+import com.ecommerce.infra.exceptions.DataErroResponse;
 import com.ecommerce.infra.exceptions.BusinessRuleException;
 import com.ecommerce.infra.exceptions.ResourceNotFoundException;
 import com.ecommerce.infra.exceptions.UnauthorizedActionException;
