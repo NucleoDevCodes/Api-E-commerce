@@ -1,7 +1,7 @@
 package com.ecommerce.aplication.services;
 
-import com.ecommerce.aplication.records.DataFavoriteProductRequest;
-import com.ecommerce.aplication.records.DataFavoriteProductResponse;
+import com.ecommerce.aplication.records.FavoriteProductRecords.DataFavoriteProductRequest;
+import com.ecommerce.aplication.records.FavoriteProductRecords.DataFavoriteProductResponse;
 import com.ecommerce.infra.exceptions.BusinessRuleException;
 import com.ecommerce.infra.exceptions.ResourceNotFoundException;
 import com.ecommerce.model.favorite.FavoriteProducts;
