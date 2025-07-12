@@ -1,7 +1,7 @@
 package com.ecommerce.infra.controllers;
 
-import com.ecommerce.aplication.records.DataFavoriteProductRequest;
-import com.ecommerce.aplication.records.DataFavoriteProductResponse;
+import com.ecommerce.aplication.records.FavoriteProductRecords.DataFavoriteProductRequest;
+import com.ecommerce.aplication.records.FavoriteProductRecords.DataFavoriteProductResponse;
 import com.ecommerce.aplication.services.ServiceFavoriteProducts;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;

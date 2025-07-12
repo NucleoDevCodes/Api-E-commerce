@@ -1,9 +1,6 @@
 package com.ecommerce.infra.controllers;
 
-import com.ecommerce.aplication.records.DataErroResponse;
-import com.ecommerce.infra.exceptions.BusinessRuleException;
-import com.ecommerce.infra.exceptions.ResourceNotFoundException;
-import com.ecommerce.infra.exceptions.UnauthorizedActionException;
+import com.ecommerce.infra.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,6 +53,17 @@ public class HandleController {
     public ResponseEntity<DataErroResponse> handleIllegalState(IllegalStateException ex, HttpServletRequest request) {
         logger.warn("Estado inválido: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.CONFLICT, "Estado inválido: " + ex.getMessage(), request.getRequestURI());
+    }
+    @ExceptionHandler(CartNotFoundException.class)
+    public ResponseEntity<DataErroResponse> handleCartNotFound(CartNotFoundException ex, HttpServletRequest request) {
+        logger.warn("Carrinho não encontrado: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CartItemNotFoundException.class)
+    public ResponseEntity<DataErroResponse> handleCartItemNotFound(CartItemNotFoundException ex, HttpServletRequest request) {
+        logger.warn("Item do carrinho não encontrado: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

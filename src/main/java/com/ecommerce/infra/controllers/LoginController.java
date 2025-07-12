@@ -1,9 +1,9 @@
 package com.ecommerce.infra.controllers;
 
-import com.ecommerce.aplication.records.DataPasswordChanged;
-import com.ecommerce.aplication.records.DataPublicProfile;
-import com.ecommerce.aplication.records.DataUserResponse;
-import com.ecommerce.aplication.records.DataUsers;
+import com.ecommerce.aplication.records.UsersRecords.DataPasswordChanged;
+import com.ecommerce.aplication.records.UsersRecords.DataPublicProfile;
+import com.ecommerce.aplication.records.UsersRecords.DataUserResponse;
+import com.ecommerce.aplication.records.UsersRecords.DataUsers;
 import com.ecommerce.aplication.services.ServiceUsers;
 import com.ecommerce.infra.exceptions.ResourceNotFoundException;
 import com.ecommerce.infra.exceptions.UnauthorizedActionException;
