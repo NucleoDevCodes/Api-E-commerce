@@ -60,7 +60,11 @@ public class HandleController {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
-
+    @ExceptionHandler(CartItemNotFoundException.class)
+    public ResponseEntity<DataErroResponse> handleCartItemNotFound(CartItemNotFoundException ex, HttpServletRequest request) {
+        logger.warn("Item do carrinho não encontrado: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
