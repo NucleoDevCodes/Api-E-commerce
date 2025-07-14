@@ -92,6 +92,11 @@ public class ServiceProducts {
         return toResponseDto(saved);
     }
 
+    public ProductModel findProductEntityById(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+    }
+
     public DataProductsResponse findById(Long id) {
         logger.debug("Buscando produto por ID: {}", id);
 
@@ -242,5 +247,9 @@ public class ServiceProducts {
             logger.warn("Quantidade inválida informada: {}", quant);
             throw new BusinessRuleException("A quantidade deve ser maior ou igual a 1.");
         }
+    }
+
+    public void save(ProductModel product) {
+        repository.save(product);
     }
 }
