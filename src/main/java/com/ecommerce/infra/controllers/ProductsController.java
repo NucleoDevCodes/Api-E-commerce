@@ -2,6 +2,7 @@ package com.ecommerce.infra.controllers;
 
 import com.ecommerce.aplication.records.ProductsRecords.DataProducts;
 import com.ecommerce.aplication.records.ProductsRecords.DataProductsResponse;
+import com.ecommerce.aplication.records.ProductsRecords.DataUpdateQuantRequest;
 import com.ecommerce.aplication.services.ServiceProducts;
 import com.ecommerce.model.product.CategoryItem;
 import com.ecommerce.model.product.CategoryType;
@@ -134,6 +135,23 @@ public class ProductsController {
         List<DataProductsResponse> products = service.findAllOrderByPrice(priceSort, page).getContent();
         return ResponseEntity.ok(products);
     }
+
+    @PatchMapping("/{id}/estoque")
+    public ResponseEntity<?> updateQuant(@PathVariable("id")Long id, @RequestBody DataUpdateQuantRequest request){
+        logger.info("Atualizando estoque do produto ID: {}", id);
+        var product= service.findProductEntityById(id);
+
+        if (request.quant() < 0) {
+            return ResponseEntity.badRequest().body("Quantidade de estoque não pode ser negativa.");
+        }
+
+        product.setQuant(request.quant());
+        service.save(product);
+
+        logger.info("Estoque atualizado para produto ID: {}, novo estoque: {}", id, request.quant());
+        return ResponseEntity.ok("Estoque atualizado com sucesso.");
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {

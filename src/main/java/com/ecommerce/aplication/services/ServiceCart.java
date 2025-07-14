@@ -35,22 +35,24 @@ public class ServiceCart {
     public void addItemToCart(Long userId, DataCartItemRequest request) {
         var cart = cartRepository.findByUsersId(userId).orElseGet(() -> createCartForUser(userId));
 
-        var product = productRepository.findById(request.productId()).orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+        var product = productRepository.findById(request.productId())
+                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+
         if (product.getQuant() < request.quantity()) {
-            throw new RuntimeException("estoque insuficiente");
+            throw new RuntimeException("Estoque insuficiente para o produto: " + product.getName());
         }
 
         var item = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId())
                 .orElseGet(() -> new CartItem());
-
 
         item.setCart(cart);
         item.setProduct(product);
         item.setQuantity(request.quantity());
 
         cartItemRepository.save(item);
-
     }
+
+
 
     public void removeItemCart(Long userId, Long productId) {
         var cart = cartRepository.findByUsersId(userId)
@@ -90,5 +92,21 @@ public class ServiceCart {
         var cartData = new DataCart(user, new ArrayList<>());
         var cart = new CartModel(cartData);
         return cartRepository.save(cart);
+    }
+
+    private  void finalizeCart(Long userId ){
+     var cart=cartRepository.findByUsersId(userId).orElseThrow(() -> new CartNotFoundException("Carrinho não encontrado para o usuário com ID: " + userId));
+
+     for(CartItem item: cart.getItems()){
+         var product= item.getProduct();
+         int remaining=product.getQuant() - item.getQuantity();
+
+        if (remaining < 0) {
+            throw new RuntimeException("Estoque insuficiente para o produto: " + product.getName());
+        }
+
+        product.setQuant(remaining);
+        productRepository.save(product);
+    }
     }
 }
