@@ -17,10 +17,14 @@
     </parent>
 
     <dependencies>
-        <!-- Web API -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -51,7 +55,6 @@
             <version>1.18.36</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Outros, como JPA, DevTools, etc. -->
     </dependencies>
 
     <build>
@@ -60,7 +63,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.ecommerce.ApiecommerceApplication</mainClass> <!-- ajuste para o seu pacote -->
+                    <mainClass>com.ecommerce.ApiecommerceApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>
