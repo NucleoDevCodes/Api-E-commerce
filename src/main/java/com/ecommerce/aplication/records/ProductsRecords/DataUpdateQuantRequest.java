@@ -1,4 +1,4 @@
 package com.ecommerce.aplication.records.ProductsRecords;
 
-public record DataUpdateRequest(Integer quant) {
+public record DataUpdateQuantRequest(Integer quant) {
 }
