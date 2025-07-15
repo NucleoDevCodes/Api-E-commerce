@@ -73,6 +73,12 @@ public class HandleController {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<DataErroResponse> handleOrderNotFound(OrderNotFoundException ex, HttpServletRequest request) {
+        logger.warn("Pedido não encontrado: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         logger.warn("Erro de validação: {}", ex.getMessage());
