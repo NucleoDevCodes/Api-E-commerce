@@ -54,6 +54,7 @@ public class HandleController {
         logger.warn("Estado inválido: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.CONFLICT, "Estado inválido: " + ex.getMessage(), request.getRequestURI());
     }
+
     @ExceptionHandler(CartNotFoundException.class)
     public ResponseEntity<DataErroResponse> handleCartNotFound(CartNotFoundException ex, HttpServletRequest request) {
         logger.warn("Carrinho não encontrado: {}", ex.getMessage());
@@ -64,6 +65,12 @@ public class HandleController {
     public ResponseEntity<DataErroResponse> handleCartItemNotFound(CartItemNotFoundException ex, HttpServletRequest request) {
         logger.warn("Item do carrinho não encontrado: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(CartEmptyException.class)
+    public ResponseEntity<DataErroResponse> handleCartEmpty(CartEmptyException ex, HttpServletRequest request) {
+        logger.warn("Carrinho vazio: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
