@@ -54,6 +54,7 @@ public class HandleController {
         logger.warn("Estado inválido: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.CONFLICT, "Estado inválido: " + ex.getMessage(), request.getRequestURI());
     }
+
     @ExceptionHandler(CartNotFoundException.class)
     public ResponseEntity<DataErroResponse> handleCartNotFound(CartNotFoundException ex, HttpServletRequest request) {
         logger.warn("Carrinho não encontrado: {}", ex.getMessage());
@@ -65,6 +66,31 @@ public class HandleController {
         logger.warn("Item do carrinho não encontrado: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
+
+    @ExceptionHandler(CartEmptyException.class)
+    public ResponseEntity<DataErroResponse> handleCartEmpty(CartEmptyException ex, HttpServletRequest request) {
+        logger.warn("Carrinho vazio: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<DataErroResponse> handleOrderNotFound(OrderNotFoundException ex, HttpServletRequest request) {
+        logger.warn("Pedido não encontrado: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(StockUnavailableException.class)
+    public ResponseEntity<DataErroResponse> handleStockUnavailable(StockUnavailableException ex, HttpServletRequest request) {
+        logger.warn("Estoque insuficiente: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<DataErroResponse> handleUserNotFound(UserNotFoundException ex, HttpServletRequest request) {
+        logger.warn("Usuário não encontrado: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
+    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
