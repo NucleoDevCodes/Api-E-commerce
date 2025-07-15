@@ -3,8 +3,7 @@ package com.ecommerce.aplication.services;
 import com.ecommerce.aplication.records.CartRecords.DataCart;
 import com.ecommerce.aplication.records.CartRecords.DataCartItemRequest;
 import com.ecommerce.aplication.records.CartRecords.DataCartItemResponse;
-import com.ecommerce.infra.exceptions.CartItemNotFoundException;
-import com.ecommerce.infra.exceptions.CartNotFoundException;
+import com.ecommerce.infra.exceptions.*;
 import com.ecommerce.model.cart.CartModel;
 import com.ecommerce.model.cart.cartItem.CartItem;
 import com.ecommerce.model.repositorys.CartItemRepository;
@@ -36,10 +35,10 @@ public class ServiceCart {
         var cart = cartRepository.findByUsersId(userId).orElseGet(() -> createCartForUser(userId));
 
         var product = productRepository.findById(request.productId())
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
 
         if (product.getQuant() < request.quantity()) {
-            throw new RuntimeException("Estoque insuficiente para o produto: " + product.getName());
+            throw new StockUnavailableException("Estoque insuficiente para o produto: " + product.getName());
         }
 
         var item = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId())
@@ -87,7 +86,7 @@ public class ServiceCart {
 
     private CartModel createCartForUser(Long userId) {
         var user = usersRepositroy.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
         var cartData = new DataCart(user, new ArrayList<>());
         var cart = new CartModel(cartData);
@@ -102,7 +101,7 @@ public class ServiceCart {
          int remaining=product.getQuant() - item.getQuantity();
 
         if (remaining < 0) {
-            throw new RuntimeException("Estoque insuficiente para o produto: " + product.getName());
+            throw new StockUnavailableException("Estoque insuficiente para o produto: " + product.getName());
         }
 
         product.setQuant(remaining);
