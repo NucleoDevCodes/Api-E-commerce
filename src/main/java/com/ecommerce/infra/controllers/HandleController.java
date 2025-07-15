@@ -79,6 +79,12 @@ public class HandleController {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(StockUnavailableException.class)
+    public ResponseEntity<DataErroResponse> handleStockUnavailable(StockUnavailableException ex, HttpServletRequest request) {
+        logger.warn("Estoque insuficiente: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Object> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         logger.warn("Erro de validação: {}", ex.getMessage());
