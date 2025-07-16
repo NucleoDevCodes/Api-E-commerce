@@ -28,7 +28,20 @@ public interface ProductRepository extends JpaRepository<ProductModel,Long> {
             @Param("color") String color,
             @Param("size") String size
     );
-    
+
+
+    @Query("""
+            SELECT p from ProductModel p 
+            Where p.item =: categoryItem
+            AND p.id <>: productId
+            ORDER BY function('RAND')
+            
+            """)
+
+List<ProductModel>findTop6ByItemAndNotIdRandomOrder(
+        @Param("categoryItem")CategoryItem categoryItem,
+        @Param("productId") Long productId);
+
     Page<ProductModel> findBySizesContainingIgnoreCase(String sizes, Pageable pageable);
     Page<ProductModel> findByColorsContainingIgnoreCase(String colors, Pageable pageable);
 
