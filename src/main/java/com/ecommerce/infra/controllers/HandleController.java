@@ -79,6 +79,12 @@ public class HandleController {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage(), request.getRequestURI());
     }
 
+    @ExceptionHandler(PaymentNotFoundException.class)
+    public ResponseEntity<DataErroResponse> handlePaymentNotFound(PaymentNotFoundException ex,HttpServletRequest request){
+        logger.warn("Erro de pagamento: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), request.getRequestURI());
+    }
+
     @ExceptionHandler(StockUnavailableException.class)
     public ResponseEntity<DataErroResponse> handleStockUnavailable(StockUnavailableException ex, HttpServletRequest request) {
         logger.warn("Estoque insuficiente: {}", ex.getMessage());
