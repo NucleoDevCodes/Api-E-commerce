@@ -116,4 +116,10 @@ public class ServiceUsers implements UserDetailsService {
         logger.debug("Salvando usuário ID: {}", user.getId());
         return usersRepository.save(user);
     }
+
+    public String findEmailById(Long id) {
+        logger.debug("Buscando email do usuário pelo ID: {}", id);
+        return usersRepository.findEmailById(id)
+                .orElseThrow(() -> new BusinessRuleException("Usuário não encontrado com ID: " + id));
+    }
 }
