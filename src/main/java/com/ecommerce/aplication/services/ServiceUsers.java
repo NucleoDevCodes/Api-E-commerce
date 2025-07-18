@@ -1,12 +1,19 @@
 package com.ecommerce.aplication.services;
 
 import com.ecommerce.aplication.records.UsersRecords.DataPasswordChanged;
-import com.ecommerce.aplication.records.UsersRecords.DataUsers;
+import com.ecommerce.aplication.records.UsersRecords.DataUserLogin;
+import com.ecommerce.aplication.records.UsersRecords.DataUserResponse;
+import com.ecommerce.aplication.records.UsersRecords.DataUsersRegister;
 import com.ecommerce.infra.exceptions.BusinessRuleException;
+import com.ecommerce.infra.exceptions.UnauthorizedActionException;
 import com.ecommerce.model.repositorys.UsersRepositroy;
 import com.ecommerce.model.users.Users;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -37,8 +44,9 @@ public class ServiceUsers implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado ou inativo com e-mail: " + email));
     }
 
+
     @Transactional
-    public Long registerUser(DataUsers data) {
+    public Long registerUser(DataUsersRegister data) {
         logger.info("Registrando novo usuário com email: {}", data.email());
         if (usersRepository.findByEmail(data.email()).isPresent()) {
             logger.warn("Tentativa de registro com email já em uso: {}", data.email());
