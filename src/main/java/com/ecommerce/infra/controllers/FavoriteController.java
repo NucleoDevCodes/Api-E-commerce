@@ -30,11 +30,11 @@ public class FavoriteController {
         return ResponseEntity.status(201).build();
     }
 
-    @DeleteMapping("/{productId}")
+    @DeleteMapping("/{produtoId}")
     public ResponseEntity<Void> remove(@AuthenticationPrincipal(expression = "id") Long userId,
-                                       @PathVariable Long productId) {
-        logger.info("Usuario {} Removendo Produto {} De Favoritos", userId, productId);
-        service.remove(userId, productId);
+                                       @PathVariable Long produtoId) {
+        logger.info("Usuario {} Removendo Produto {} De Favoritos", userId, produtoId);
+        service.remove(userId, produtoId);
         return ResponseEntity.noContent().build();
     }
 
