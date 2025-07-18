@@ -5,6 +5,7 @@ import com.ecommerce.aplication.records.ProductsRecords.DataProductsResponse;
 import com.ecommerce.aplication.records.ProductsRecords.DataUpdateQuantRequest;
 import com.ecommerce.aplication.services.ServiceProductsWrite;
 import com.ecommerce.model.product.ProductModel;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ public class ProductsControllerWrite {
     }
 
     @PostMapping
-    public ResponseEntity<DataProductsResponse> create(@RequestBody DataProducts data){
+    public ResponseEntity<DataProductsResponse> create(@Valid  @RequestBody DataProducts data){
         logger.info("Criado Produto com nome: {}"+data.name());
         DataProductsResponse created=service.create(data);
         logger.info("Produto Criado com ID: {}"+ created.id());
@@ -31,7 +32,7 @@ public class ProductsControllerWrite {
     }
 
     @PutMapping("/{id}")
-    public  ResponseEntity<DataProductsResponse> update(@PathVariable("id") Long id, @RequestBody DataProducts data){
+    public  ResponseEntity<DataProductsResponse> update(@PathVariable("id") Long id,@Valid @RequestBody DataProducts data){
         logger.info("Atualizando Produto com ID: {}"+ id);
         DataProductsResponse updated=service.update(id,data);
         logger.info("Produto Atualizado com ID: {}", updated.id());
@@ -39,7 +40,7 @@ public class ProductsControllerWrite {
     }
 
     @PatchMapping("/{id}/estoque")
-    public ResponseEntity<?> updateQuant(@PathVariable Long id, @RequestBody DataUpdateQuantRequest request) {
+    public ResponseEntity<?> updateQuant(@PathVariable Long id,@Valid @RequestBody DataUpdateQuantRequest request) {
         logger.info("Atualizando estoque do produto ID: {}", id);
         ProductModel product = service.repository.findById(id).orElse(null);
 

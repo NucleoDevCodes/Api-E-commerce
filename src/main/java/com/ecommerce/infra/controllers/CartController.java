@@ -3,7 +3,10 @@ package com.ecommerce.infra.controllers;
 import com.ecommerce.aplication.records.CartRecords.DataCartItemRequest;
 import com.ecommerce.aplication.records.CartRecords.DataCartItemResponse;
 import com.ecommerce.aplication.services.ServiceCart;
+import com.ecommerce.model.users.Users;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,25 +21,24 @@ public class CartController {
         this.cartService = cartService;
     }
 
-    private Long getLoggedUserId() {
-        return 1L;
-    }
 
-    @PostMapping("/items")
-    public ResponseEntity<Void> addItem(@RequestBody DataCartItemRequest dto) {
-        cartService.addItemToCart(getLoggedUserId(), dto);
+    @PostMapping("/itens")
+    public ResponseEntity<Void> add(@AuthenticationPrincipal Users user, @Valid @RequestBody DataCartItemRequest dto) {
+        cartService.addItemToCart(user.getId(), dto);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/items/{productId}")
-    public ResponseEntity<Void> removeItem(@PathVariable("productId") Long productId) {
-        cartService.removeItemCart(getLoggedUserId(), productId);
+    @DeleteMapping("/itens/{produtoId}")
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal Users user,
+                                       @PathVariable("produtoId") Long produtoId) {
+        cartService.removeItemCart(user.getId(), produtoId);
         return ResponseEntity.noContent().build();
     }
 
+
     @GetMapping
-    public ResponseEntity<List<DataCartItemResponse>> getCart() {
-        var items = cartService.getCartItems(getLoggedUserId());
+    public ResponseEntity<List<DataCartItemResponse>> get(@AuthenticationPrincipal Users user) {
+        var items = cartService.getCartItems(user.getId());
         return ResponseEntity.ok(items);
     }
 }
