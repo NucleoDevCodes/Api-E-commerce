@@ -24,14 +24,14 @@ public class CartController {
 
     @PostMapping("/itens")
     public ResponseEntity<Void> add(@AuthenticationPrincipal Users user, @Valid @RequestBody DataCartItemRequest dto) {
-        cartService.addItemToCart(user.getId(), dto);
+        cartService.addProductToCart(user.getId(), dto);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/itens/{produtoId}")
     public ResponseEntity<Void> delete(@AuthenticationPrincipal Users user,
                                        @PathVariable("produtoId") Long produtoId) {
-        cartService.removeItemCart(user.getId(), produtoId);
+        cartService.removeProductFromCart(user.getId(), produtoId);
         return ResponseEntity.noContent().build();
     }
 
