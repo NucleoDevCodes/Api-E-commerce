@@ -15,7 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 
-public class SessionFiltrer extends OncePerRequestFilter  {
+public class SessionFiltrer extends OncePerRequestFilter {
     private final ServiceUsers userService;
 
     public SessionFiltrer(ServiceUsers userService) {
