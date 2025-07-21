@@ -39,6 +39,7 @@ public class ConfigSecurity {
                         .requestMatchers(HttpMethod.PATCH, "/api/products/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/products/**").hasRole("ADMIN")
 
+
                         .requestMatchers("/api/orders/**", "/api/cart/**", "/api/favorites/**", "/api/payments/**")
                         .hasAnyRole("ADMIN", "CLIENTE")
 
