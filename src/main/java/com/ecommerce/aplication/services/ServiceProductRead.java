@@ -40,7 +40,7 @@ public class ServiceProductRead {
 
     public ProductModel findProductEntityById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Produto não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Produto não encontrado"));
     }
 
     public DataProductsResponse findById(Long id) {
