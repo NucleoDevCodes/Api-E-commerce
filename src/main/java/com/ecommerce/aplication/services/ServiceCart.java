@@ -11,6 +11,7 @@ import com.ecommerce.model.repositorys.CartRepository;
 import com.ecommerce.model.repositorys.ProductRepository;
 import com.ecommerce.model.repositorys.UsersRepositroy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,8 @@ public class ServiceCart {
         this.usersRepositroy = usersRepositroy;
     }
 
-    public void addItemToCart(Long userId, DataCartItemRequest request) {
+    @Transactional
+    public void addProductToCart(Long userId, DataCartItemRequest request) {
         var cart = cartRepository.findByUsersId(userId).orElseGet(() -> createCartForUser(userId));
 
         var product = productRepository.findById(request.productId())
@@ -52,8 +54,8 @@ public class ServiceCart {
     }
 
 
-
-    public void removeItemCart(Long userId, Long productId) {
+    @Transactional
+    public void removeProductFromCart(Long userId, Long productId) {
         var cart = cartRepository.findByUsersId(userId)
                 .orElseThrow(() -> new CartNotFoundException("Carrinho não encontrado para o usuário com ID: " + userId));
 
@@ -62,6 +64,7 @@ public class ServiceCart {
 
         cartItemRepository.delete(item);
     }
+
 
     public List<DataCartItemResponse> getCartItems(Long userId) {
         var cart = cartRepository.findByUsersId(userId)
@@ -83,7 +86,7 @@ public class ServiceCart {
         cartRepository.save(cart);
     }
 
-
+    @Transactional
     private CartModel createCartForUser(Long userId) {
         var user = usersRepositroy.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
@@ -93,19 +96,25 @@ public class ServiceCart {
         return cartRepository.save(cart);
     }
 
-    private  void finalizeCart(Long userId ){
-     var cart=cartRepository.findByUsersId(userId).orElseThrow(() -> new CartNotFoundException("Carrinho não encontrado para o usuário com ID: " + userId));
 
-     for(CartItem item: cart.getItems()){
-         var product= item.getProduct();
-         int remaining=product.getQuant() - item.getQuantity();
+    @Transactional
+    public void finalizeCart(Long userId) {
+        var cart = cartRepository.findByUsersId(userId)
+                .orElseThrow(() -> new CartNotFoundException("Carrinho não encontrado para o usuário com ID: " + userId));
 
-        if (remaining < 0) {
-            throw new StockUnavailableException("Estoque insuficiente para o produto: " + product.getName());
+        for (CartItem item : cart.getItems()) {
+            var product = item.getProduct();
+            int remaining = product.getQuant() - item.getQuantity();
+
+            if (remaining < 0) {
+                throw new StockUnavailableException("Estoque insuficiente para o produto: " + product.getName());
+            }
+
+            product.setQuant(remaining);
+            productRepository.save(product);
         }
 
-        product.setQuant(remaining);
-        productRepository.save(product);
-    }
+        cart.getItems().clear();
+        cartRepository.save(cart);
     }
 }
