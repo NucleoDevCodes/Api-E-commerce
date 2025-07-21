@@ -19,11 +19,13 @@ import java.util.Random;
 public class ServicePayment {
     private final PaymentRepository paymentRepository;
     private final OrdersRepository orderRepository;
+    private final ServiceCart serviceCart;
     private final Random random = new Random();
 
-    public ServicePayment(PaymentRepository paymentRepository, OrdersRepository orderRepository) {
+    public ServicePayment(PaymentRepository paymentRepository, OrdersRepository orderRepository, ServiceCart serviceCart) {
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
+        this.serviceCart = serviceCart;
     }
 
 
@@ -50,6 +52,8 @@ public class ServicePayment {
             payment.setStatus(PaymentStatus.PAGO);
             order.setStatus(OrderStatus.PAGO);
             orderRepository.save(order);
+
+            serviceCart.finalizeCart(order.getUsers().getId());
         }
 
         var savedPayment = paymentRepository.save(payment);
