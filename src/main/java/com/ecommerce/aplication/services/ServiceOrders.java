@@ -2,10 +2,7 @@ package com.ecommerce.aplication.services;
 
 import com.ecommerce.aplication.records.OrderRecords.DataOrderItemResponse;
 import com.ecommerce.aplication.records.OrderRecords.DataOrderResponse;
-import com.ecommerce.infra.exceptions.CartEmptyException;
-import com.ecommerce.infra.exceptions.OrderNotFoundException;
-import com.ecommerce.infra.exceptions.StockUnavailableException;
-import com.ecommerce.infra.exceptions.UserNotFoundException;
+import com.ecommerce.infra.exceptions.*;
 import com.ecommerce.model.cart.CartModel;
 import com.ecommerce.model.cart.cartItem.CartItem;
 import com.ecommerce.model.orders.OrderModel;
@@ -19,37 +16,47 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ServiceOrders {
 
-    private final Logger logger= LoggerFactory.getLogger(ServiceOrders.class);
+    private final Logger logger = LoggerFactory.getLogger(ServiceOrders.class);
     private final OrdersRepository ordersRepository;
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ProductRepository productRepository;
-    private  final UsersRepositroy usersRepositroy;
+    private final ServiceAsync serviceAsync;
+    private final UsersRepositroy usersRepositroy;
 
-
-    public ServiceOrders(OrdersRepository ordersRepository, CartRepository cartRepository, CartItemRepository cartItemRepository, ProductRepository productRepository, UsersRepositroy usersRepositroy) {
+    public ServiceOrders(
+            OrdersRepository ordersRepository,
+            CartRepository cartRepository,
+            CartItemRepository cartItemRepository,
+            ProductRepository productRepository,
+            ServiceAsync serviceAsync,
+            UsersRepositroy usersRepositroy
+    ) {
         this.ordersRepository = ordersRepository;
         this.cartRepository = cartRepository;
         this.cartItemRepository = cartItemRepository;
         this.productRepository = productRepository;
+        this.serviceAsync = serviceAsync;
         this.usersRepositroy = usersRepositroy;
     }
 
     @Transactional
     public DataOrderResponse checkout(Long userId) {
-        logger.info("Iniciando checkout para o usuário {}", userId);
+        logger.info("🛒 Iniciando checkout para o usuário {}", userId);
 
         var user = findUserById(userId);
         var cart = findCartByUserId(userId);
 
         var cartItems = cartItemRepository.findAllByCartId(cart.getId());
         if (cartItems.isEmpty()) {
-            logger.warn("Carrinho vazio para o usuário {}", userId);
+            logger.warn("⚠️ Carrinho vazio para o usuário {}", userId);
             throw new CartEmptyException();
         }
 
@@ -59,29 +66,32 @@ public class ServiceOrders {
         ordersRepository.save(order);
         cartItemRepository.deleteAll(cartItems);
 
-        logger.info("Checkout finalizado para o usuário {} com pedido ID {}", userId, order.getId());
+        serviceAsync.sendConfirmationEmail(order);
+        serviceAsync.updateRecommendationsForOrder(order);
+
+        logger.info("✅ Checkout finalizado para usuário {} com pedido {}", userId, order.getId());
         return buildOrderResponse(order, orderItems);
     }
 
     private Users findUserById(Long id) {
         return usersRepositroy.findById(id).orElseThrow(() -> {
-            logger.warn("Usuário não encontrado com ID {}", id);
+            logger.warn("❌ Usuário não encontrado com ID {}", id);
             return new UserNotFoundException(id);
         });
     }
 
     private CartModel findCartByUserId(Long userId) {
         return cartRepository.findByUsersId(userId).orElseThrow(() -> {
-            logger.warn("Carrinho não encontrado para o usuário {}", userId);
+            logger.warn("❌ Carrinho não encontrado para o usuário {}", userId);
             return new OrderNotFoundException(userId);
         });
     }
 
     private List<OrderItem> buildOrderItems(List<CartItem> cartItems) {
-        return cartItems.stream().map(item -> {
+        List<OrderItem> orderItems = cartItems.stream().map(item -> {
             var product = item.getProduct();
             if (product.getQuant() < item.getQuantity()) {
-                logger.warn("Estoque insuficiente para o produto {} durante checkout", product.getName());
+                logger.warn("⚠️ Estoque insuficiente para produto {}", product.getName());
                 throw new StockUnavailableException(product.getName());
             }
             product.setQuant(product.getQuant() - item.getQuantity());
@@ -91,8 +101,23 @@ public class ServiceOrders {
             orderItem.setProduct(product);
             orderItem.setQuantity(item.getQuantity());
             orderItem.setPrice(product.getPrice());
+            orderItem.setColor(item.getColor());
+            orderItem.setSize(item.getSize());
+
             return orderItem;
         }).toList();
+
+        Set<String> keys = new HashSet<>();
+        for (OrderItem item : orderItems) {
+            String key = item.getProduct().getId() + "-" + item.getColor().toUpperCase() + "-" + item.getSize().toUpperCase();
+            if (!keys.add(key)) {
+                logger.warn("Item duplicado detectado no pedido: produto={}, cor={}, tamanho={}",
+                        item.getProduct().getName(), item.getColor(), item.getSize());
+                throw new BusinessRuleException("Pedido contém itens duplicados com mesma cor e tamanho.");
+            }
+        }
+
+        return orderItems;
     }
 
     private OrderModel buildOrder(Users user, List<OrderItem> items) {
@@ -102,7 +127,6 @@ public class ServiceOrders {
         order.setCreatedAt(LocalDateTime.now());
         order.setItems(items);
         items.forEach(i -> i.setOrder(order));
-        logger.debug("Pedido criado para o usuário {} com {} itens", user.getId(), items.size());
         return order;
     }
 
@@ -111,10 +135,28 @@ public class ServiceOrders {
                 i.getProduct().getId(),
                 i.getProduct().getName(),
                 i.getQuantity(),
-                i.getPrice()
+                i.getPrice(),
+                i.getColor(),
+                i.getSize()
         )).toList();
 
         return new DataOrderResponse(order.getId(), order.getStatus(), order.getCreatedAt(), itemResponses);
     }
 
+    public List<DataOrderResponse> listOrdersByUser(Long userId) {
+        return ordersRepository.findByUsersId(userId).stream().map(order -> {
+            List<DataOrderItemResponse> items = order.getItems().stream().map(i ->
+                    new DataOrderItemResponse(
+                            i.getProduct().getId(),
+                            i.getProduct().getName(),
+                            i.getQuantity(),
+                            i.getPrice(),
+                            i.getColor(),
+                            i.getSize()
+                    )
+            ).toList();
+
+            return new DataOrderResponse(order.getId(), order.getStatus(), order.getCreatedAt(), items);
+        }).toList();
+    }
 }

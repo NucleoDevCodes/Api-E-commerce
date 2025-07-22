@@ -31,10 +31,13 @@ public class ServiceUsers implements UserDetailsService {
 
     private final UsersRepositroy usersRepository;
     private final PasswordEncoder encoder;
+    private final ServiceAsync serviceAsync;
 
-    public ServiceUsers(UsersRepositroy usersRepository, PasswordEncoder encoder) {
+
+    public ServiceUsers(UsersRepositroy usersRepository, PasswordEncoder encoder, ServiceAsync serviceAsync) {
         this.usersRepository = usersRepository;
         this.encoder = encoder;
+        this.serviceAsync = serviceAsync;
     }
 
     @Override
@@ -64,6 +67,8 @@ public class ServiceUsers implements UserDetailsService {
 
         Long savedId = usersRepository.save(user).getId();
         logger.info("Usuário registrado com sucesso. ID: {}", savedId);
+
+        serviceAsync.sendWelcomeEmail(user);
         return savedId;
     }
 

@@ -36,9 +36,18 @@ public class CartItem {
     @Positive(message = "A quantidade deve ser maior que zero.")
     private Integer quantity;
 
+    @Column(name = "cor")
+    private String color;
+
+    @Column(name = "tamanho")
+    private String size;
+
+
     public CartItem(DataCartItems data) {
         this.cart = data.cart();
         this.product = data.product();
         this.quantity = data.quantity();
+        this.color=data.color();
+        this.size=data.size();
     }
 }
