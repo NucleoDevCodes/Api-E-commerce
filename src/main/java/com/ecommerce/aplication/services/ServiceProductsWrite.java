@@ -19,9 +19,11 @@ public class ServiceProductsWrite {
     private static final Logger logger = LoggerFactory.getLogger(ServiceProductsWrite.class);
 
     public final ProductRepository repository;
+    private final ServiceAsync serviceAsync;
 
-    public ServiceProductsWrite(ProductRepository repository) {
+    public ServiceProductsWrite(ProductRepository repository, ServiceAsync serviceAsync) {
         this.repository = repository;
+        this.serviceAsync = serviceAsync;
     }
 
     private DataProductsResponse toResponseDto(ProductModel product) {
@@ -54,6 +56,8 @@ public class ServiceProductsWrite {
         ProductModel saved = repository.save(product);
 
         logger.info("Produto criado com sucesso, ID: {}", saved.getId());
+
+        serviceAsync.updateRecommendations(saved);
         return toResponseDto(saved);
     }
 
@@ -82,6 +86,7 @@ public class ServiceProductsWrite {
 
         ProductModel saved = repository.save(existing);
         logger.info("Produto ID {} atualizado com sucesso", id);
+        serviceAsync.updateRecommendations(saved);
 
         return toResponseDto(saved);
     }
