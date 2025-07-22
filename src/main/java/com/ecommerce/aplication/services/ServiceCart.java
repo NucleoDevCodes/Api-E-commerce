@@ -34,6 +34,8 @@ public class ServiceCart {
         this.productRepository = productRepository;
         this.usersRepositroy = usersRepositroy;
     }
+
+
     @Transactional
     public void addProductToCart(Long userId, DataCartItemRequest request) {
         logger.info("Usuário {} adicionando produto {} ao carrinho", userId, request.productId());
@@ -54,9 +56,18 @@ public class ServiceCart {
             throw new StockUnavailableException("Estoque insuficiente para o produto: " + product.getName());
         }
 
-        CartItem item = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId())
-                .orElseGet(CartItem::new);
+        boolean exists = cart.getItems().stream().anyMatch(item ->
+                item.getProduct().getId().equals(product.getId()) &&
+                        item.getColor().equalsIgnoreCase(request.color()) &&
+                        item.getSize().equalsIgnoreCase(request.size())
+        );
 
+        if (exists) {
+            logger.warn("Produto já presente no carrinho com mesma cor e tamanho");
+            throw new BusinessRuleException("Este produto já está no carrinho com mesma cor e tamanho.");
+        }
+
+        CartItem item = new CartItem();
         item.setCart(cart);
         item.setProduct(product);
         item.setQuantity(request.quantity());
@@ -65,7 +76,7 @@ public class ServiceCart {
 
         cartItemRepository.save(item);
 
-        logger.info("Produto {} adicionado ao carrinho com cor '{}' e tamanho '{}'", product.getName(), request.color(), request.size());
+        logger.info("Produto adicionado ao carrinho com sucesso.");
     }
 
     @Transactional
