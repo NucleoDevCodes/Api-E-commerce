@@ -48,6 +48,19 @@ public class ServiceProductsWrite {
 
         validateProductData(data.name(), data.price(), normalizedColors, normalizedSizes, data.quant());
 
+        boolean exists = repository.findAll().stream().anyMatch(existing ->
+                existing.getName().equalsIgnoreCase(data.name()) &&
+                        existing.getType().equals(data.type()) &&
+                        existing.getItem().equals(data.item()) &&
+                        normalizeList(existing.getSizes()).equals(normalizedSizes) &&
+                        normalizeList(existing.getColors()).equals(normalizedColors)
+        );
+
+        if (exists) {
+            logger.warn("Produto duplicado detectado: {}", data.name());
+            throw new BusinessRuleException("Produto já cadastrado com estas especificações.");
+        }
+
         ProductModel product = new ProductModel(data);
         product.setColors(normalizedColors);
         product.setSizes(normalizedSizes);
