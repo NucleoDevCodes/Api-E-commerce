@@ -30,7 +30,7 @@ public class OrderItem {
     @NotNull(message = "o pedido associado ao item não pode ser nulo")
     private OrderModel order;
 
-    @ManyToOne
+    @ManyToOne(optional = false)
     @JoinColumn(name = "produto_id", referencedColumnName = "id")
     @NotNull(message = "O produto associado ao item não pode ser nulo.")
     private ProductModel product;
@@ -40,6 +40,12 @@ public class OrderItem {
     @Positive(message = "A quantidade deve ser maior que zero.")
     private Integer quantity;
 
+    @Column(name = "cor")
+    private String color;
+
+    @Column(name = "tamanho")
+    private String size;
+
     @NotNull(message = "Deve adcionar algum produto")
     private BigDecimal price;
 
@@ -48,6 +54,8 @@ public class OrderItem {
         this.product=data.product();
         this.quantity=data.quantity();
         this.price=data.product().getPrice();
+        this.color=data.color();
+        this.size=data.size();
     }
 
 

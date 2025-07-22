@@ -35,125 +35,131 @@ public class ServiceCart {
         this.usersRepositroy = usersRepositroy;
     }
 
+
     @Transactional
     public void addProductToCart(Long userId, DataCartItemRequest request) {
         logger.info("Usuário {} adicionando produto {} ao carrinho", userId, request.productId());
-        var cart = cartRepository.findByUsersId(userId).orElseGet(() -> {
+
+        CartModel cart = cartRepository.findByUsersId(userId).orElseGet(() -> {
             logger.info("Carrinho não encontrado para o usuário {}. Criando novo carrinho.", userId);
             return createCartForUser(userId);
         });
 
         var product = productRepository.findById(request.productId())
                 .orElseThrow(() -> {
-                    logger.warn("Produto {} não encontrado ao adicionar ao carrinho do usuário {}", request.productId(), userId);
+                    logger.warn("Produto {} não encontrado", request.productId());
                     return new ResourceNotFoundException("Produto não encontrado");
                 });
 
         if (product.getQuant() < request.quantity()) {
-            logger.warn("Estoque insuficiente para o produto {} ao adicionar no carrinho do usuário {}", product.getName(), userId);
+            logger.warn("Estoque insuficiente para o produto {}", product.getName());
             throw new StockUnavailableException("Estoque insuficiente para o produto: " + product.getName());
         }
 
-        var item = cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId())
-                .orElseGet(() -> new CartItem());
+        boolean exists = cart.getItems().stream().anyMatch(item ->
+                item.getProduct().getId().equals(product.getId()) &&
+                        item.getColor().equalsIgnoreCase(request.color()) &&
+                        item.getSize().equalsIgnoreCase(request.size())
+        );
 
+        if (exists) {
+            logger.warn("Produto já presente no carrinho com mesma cor e tamanho");
+            throw new BusinessRuleException("Este produto já está no carrinho com mesma cor e tamanho.");
+        }
+
+        CartItem item = new CartItem();
         item.setCart(cart);
         item.setProduct(product);
         item.setQuantity(request.quantity());
+        item.setColor(request.color());
+        item.setSize(request.size());
 
         cartItemRepository.save(item);
-        logger.info("Produto {} adicionado ao carrinho do usuário {}", product.getName(), userId);
+
+        logger.info("Produto adicionado ao carrinho com sucesso.");
     }
 
     @Transactional
     public void removeProductFromCart(Long userId, Long productId) {
         logger.info("Usuário {} removendo produto {} do carrinho", userId, productId);
-        var cart = cartRepository.findByUsersId(userId)
-                .orElseThrow(() -> {
-                    logger.warn("Carrinho não encontrado para o usuário {}", userId);
-                    return new CartNotFoundException("Carrinho não encontrado para o usuário com ID: " + userId);
-                });
 
-        var item = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId)
-                .orElseThrow(() -> {
-                    logger.warn("Item do produto {} não encontrado no carrinho do usuário {}", productId, userId);
-                    return new CartItemNotFoundException("Item do produto com ID: " + productId + " não encontrado no carrinho.");
-                });
+        CartModel cart = cartRepository.findByUsersId(userId)
+                .orElseThrow(() -> new CartNotFoundException("Carrinho não encontrado"));
+
+        CartItem item = cartItemRepository.findByCartIdAndProductId(cart.getId(), productId)
+                .orElseThrow(() -> new CartItemNotFoundException("Item não encontrado no carrinho"));
 
         cartItemRepository.delete(item);
-        logger.info("Produto {} removido do carrinho do usuário {}", productId, userId);
+
+        logger.info("Produto {} removido do carrinho", productId);
     }
 
+    @Transactional(readOnly = true)
     public List<DataCartItemResponse> getCartItems(Long userId) {
         logger.info("Buscando itens do carrinho para o usuário {}", userId);
-        var cart = cartRepository.findByUsersId(userId)
-                .orElseThrow(() -> {
-                    logger.warn("Carrinho não encontrado para o usuário {}", userId);
-                    return new CartNotFoundException("Carrinho não encontrado para o usuário com ID: " + userId);
-                });
+
+        CartModel cart = cartRepository.findByUsersId(userId)
+                .orElseThrow(() -> new CartNotFoundException("Carrinho não encontrado"));
 
         return cart.getItems().stream()
                 .map(item -> new DataCartItemResponse(
                         item.getProduct().getId(),
                         item.getProduct().getName(),
-                        item.getQuantity()))
+                        item.getQuantity(),
+                        item.getColor(),
+                        item.getSize()))
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void clearCart(Long userId) {
         logger.info("Limpando carrinho do usuário {}", userId);
-        var cart = cartRepository.findByUsersId(userId)
-                .orElseThrow(() -> {
-                    logger.warn("Carrinho não encontrado para o usuário {}", userId);
-                    return new CartNotFoundException("Carrinho não encontrado para o usuário com ID: " + userId);
-                });
+
+        CartModel cart = cartRepository.findByUsersId(userId)
+                .orElseThrow(() -> new CartNotFoundException("Carrinho não encontrado"));
 
         cart.getItems().clear();
+        cartItemRepository.deleteAllByCartId(cart.getId());
+
         cartRepository.save(cart);
-        logger.info("Carrinho do usuário {} limpo com sucesso", userId);
+        logger.info("Carrinho limpo com sucesso");
     }
 
     @Transactional
     private CartModel createCartForUser(Long userId) {
         logger.info("Criando carrinho para o usuário {}", userId);
+
         var user = usersRepositroy.findById(userId)
-                .orElseThrow(() -> {
-                    logger.warn("Usuário {} não encontrado ao criar carrinho", userId);
-                    return new UserNotFoundException(userId);
-                });
+                .orElseThrow(() -> new UserNotFoundException(userId));
 
         var cartData = new DataCart(user, new ArrayList<>());
         var cart = new CartModel(cartData);
-        var savedCart = cartRepository.save(cart);
-        logger.info("Carrinho criado para o usuário {} com ID {}", userId, savedCart.getId());
-        return savedCart;
+
+        return cartRepository.save(cart);
     }
 
     @Transactional
     public void finalizeCart(Long userId) {
         logger.info("Finalizando carrinho do usuário {}", userId);
-        var cart = cartRepository.findByUsersId(userId)
-                .orElseThrow(() -> {
-                    logger.warn("Carrinho não encontrado para finalizar para o usuário {}", userId);
-                    return new CartNotFoundException("Carrinho não encontrado para o usuário com ID: " + userId);
-                });
+
+        CartModel cart = cartRepository.findByUsersId(userId)
+                .orElseThrow(() -> new CartNotFoundException("Carrinho não encontrado"));
 
         for (CartItem item : cart.getItems()) {
             var product = item.getProduct();
             int remaining = product.getQuant() - item.getQuantity();
 
             if (remaining < 0) {
-                logger.warn("Estoque insuficiente para o produto {} ao finalizar carrinho do usuário {}", product.getName(), userId);
+                logger.warn("Estoque insuficiente para o produto {}", product.getName());
                 throw new StockUnavailableException("Estoque insuficiente para o produto: " + product.getName());
             }
 
             product.setQuant(remaining);
             productRepository.save(product);
-            logger.debug("Estoque atualizado para o produto {}. Quantidade restante: {}", product.getName(), remaining);
         }
 
         cart.getItems().clear();
         cartRepository.save(cart);
-        logger.info("Carrinho do usuário {} finalizado e limpo", userId);
+        logger.info("Carrinho finalizado");
     }
-}
+    }
