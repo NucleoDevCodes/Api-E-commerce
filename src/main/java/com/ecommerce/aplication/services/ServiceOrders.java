@@ -2,10 +2,7 @@ package com.ecommerce.aplication.services;
 
 import com.ecommerce.aplication.records.OrderRecords.DataOrderItemResponse;
 import com.ecommerce.aplication.records.OrderRecords.DataOrderResponse;
-import com.ecommerce.infra.exceptions.CartEmptyException;
-import com.ecommerce.infra.exceptions.OrderNotFoundException;
-import com.ecommerce.infra.exceptions.StockUnavailableException;
-import com.ecommerce.infra.exceptions.UserNotFoundException;
+import com.ecommerce.infra.exceptions.*;
 import com.ecommerce.model.cart.CartModel;
 import com.ecommerce.model.cart.cartItem.CartItem;
 import com.ecommerce.model.orders.OrderModel;
@@ -19,7 +16,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ServiceOrders {
@@ -89,7 +88,7 @@ public class ServiceOrders {
     }
 
     private List<OrderItem> buildOrderItems(List<CartItem> cartItems) {
-        return cartItems.stream().map(item -> {
+        List<OrderItem> orderItems = cartItems.stream().map(item -> {
             var product = item.getProduct();
             if (product.getQuant() < item.getQuantity()) {
                 logger.warn("⚠️ Estoque insuficiente para produto {}", product.getName());
@@ -107,6 +106,18 @@ public class ServiceOrders {
 
             return orderItem;
         }).toList();
+
+        Set<String> keys = new HashSet<>();
+        for (OrderItem item : orderItems) {
+            String key = item.getProduct().getId() + "-" + item.getColor().toUpperCase() + "-" + item.getSize().toUpperCase();
+            if (!keys.add(key)) {
+                logger.warn("Item duplicado detectado no pedido: produto={}, cor={}, tamanho={}",
+                        item.getProduct().getName(), item.getColor(), item.getSize());
+                throw new BusinessRuleException("Pedido contém itens duplicados com mesma cor e tamanho.");
+            }
+        }
+
+        return orderItems;
     }
 
     private OrderModel buildOrder(Users user, List<OrderItem> items) {
