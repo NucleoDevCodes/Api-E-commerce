@@ -30,6 +30,13 @@ public class FavoriteController {
         return ResponseEntity.status(201).build();
     }
 
+    @GetMapping("/recomendacoes")
+    public ResponseEntity<List<DataFavoriteProductResponse>> recommendation(@AuthenticationPrincipal(expression = "id") Long userId) {
+        logger.info("Usuario {} solicitando recomendações baseadas nos favoritos", userId);
+        List<DataFavoriteProductResponse> recomendados = service.recommend(userId);
+        return ResponseEntity.ok(recomendados);
+    }
+
     @DeleteMapping("/{produtoId}")
     public ResponseEntity<Void> remove(@AuthenticationPrincipal(expression = "id") Long userId,
                                        @PathVariable Long produtoId) {

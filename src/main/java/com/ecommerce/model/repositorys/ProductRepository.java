@@ -51,5 +51,8 @@ List<ProductModel>findTop6ByItemAndNotIdRandomOrder(
 
     Page<ProductModel> findByType(CategoryType type, Pageable pageable);
 
+    List<ProductModel> findByItemInAndTypeInAndIdNotIn(List<CategoryItem> items, List<CategoryType> types, List<Long> excludedIds);
+
+
     Page<ProductModel> findByItemAndType(CategoryItem item, CategoryType type, Pageable pageable);
 }
