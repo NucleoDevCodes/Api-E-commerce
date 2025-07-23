@@ -5,6 +5,8 @@ import com.ecommerce.aplication.records.FavoriteProductRecords.DataFavoriteProdu
 import com.ecommerce.infra.exceptions.BusinessRuleException;
 import com.ecommerce.infra.exceptions.ResourceNotFoundException;
 import com.ecommerce.model.favorite.FavoriteProducts;
+import com.ecommerce.model.product.CategoryItem;
+import com.ecommerce.model.product.CategoryType;
 import com.ecommerce.model.product.ProductModel;
 import com.ecommerce.model.repositorys.FavoriteProductsRepository;
 import com.ecommerce.model.repositorys.ProductRepository;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,6 +68,36 @@ public class ServiceFavoriteProducts {
                 fav.getProduct().getName()
         );
     }
+
+    public List<DataFavoriteProductResponse> recommend(Long userId) {
+        List<FavoriteProducts> favoritos = favoRepo.findByUserId(userId);
+
+        if (favoritos.isEmpty()) {
+            throw new BusinessRuleException("Você ainda não possui favoritos para gerar recomendações.");
+        }
+
+        List<Long> produtosFavoritados = favoritos.stream()
+                .map(fav -> fav.getProduct().getId())
+                .toList();
+
+        List<CategoryItem> categorias = favoritos.stream()
+                .map(fav -> fav.getProduct().getItem())
+                .distinct()
+                .toList();
+
+        List<CategoryType> tipos = favoritos.stream()
+                .map(fav -> fav.getProduct().getType())
+                .distinct()
+                .toList();
+
+        List<ProductModel> recomendados = productRepo
+                .findByItemInAndTypeInAndIdNotIn(categorias, tipos, produtosFavoritados);
+
+        return recomendados.stream()
+                .map(prod -> new DataFavoriteProductResponse(null, null, prod.getName()))
+                .toList();
+    }
+
 
     public List<DataFavoriteProductResponse> list(Long userId) {
         logger.debug("Listando favoritos do usuário {}", userId);
