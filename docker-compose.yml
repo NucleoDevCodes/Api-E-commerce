@@ -32,6 +32,13 @@ services:
     networks:
       - ecommerce-net
 
+  app2:
+    <<: *app_config
+    container_name: ecommerce-app-v3
+    env_file: env/app2.env
+    ports:
+      - "8082:8080"
+
 
 
 volumes:
