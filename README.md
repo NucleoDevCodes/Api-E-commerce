@@ -114,3 +114,43 @@ chmod +x mvnw
 ./mvnw clean package -DskipTests
 java -jar target/apiecommerce-1.0.0.jar --spring.profiles.active=prod
 ````
+
+
+## 🐳 Rodando com Docker
+Edite o docker-compose.yml ou crie um arquivo env/mysql.env:
+
+```bash
+MYSQL_ROOT_PASSWORD=admin
+MYSQL_DATABASE=ecommerce
+MYSQL_USER=user
+MYSQL_PASSWORD=senha
+
+SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ecommerce
+SPRING_DATASOURCE_USERNAME=user
+SPRING_DATASOURCE_PASSWORD=senha
+
+SPRING_REDIS_HOST=redis
+SPRING_REDIS_PORT=6379
+
+DDL_AUTO=update
+````
+
+Suba os containers:
+
+```bash
+docker-compose up -d
+````
+Construa e execute a imagem da API:
+
+```bash
+docker build -t api-ecommerce .
+docker run -d \
+  --name api-ecommerce \
+  --network ecommerce-net \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ecommerce \
+  -e SPRING_DATASOURCE_USERNAME=user \
+  -e SPRING_DATASOURCE_PASSWORD=senha \
+  -p 8080:8080 \
+  api-ecommerce
+````
