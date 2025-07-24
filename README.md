@@ -102,4 +102,15 @@ spring.jpa.hibernate.ddl-auto=${DDL_AUTO:update}
 ````
 Edite diretamente o application-prod.properties ou forneça via variável de ambiente.
 
+## ▶️ Como executar localmente
+### 1. Via Maven Wrapper
+```bash
+chmod +x mvnw
+./mvnw spring-boot:run -Dspring-boot.run.profiles=prod
+````
 
+### 2. Gerando e executando o JAR
+```bash
+./mvnw clean package -DskipTests
+java -jar target/apiecommerce-1.0.0.jar --spring.profiles.active=prod
+````
