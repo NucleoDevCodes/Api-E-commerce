@@ -1,32 +1,63 @@
-version: '3.8'
-
 services:
   mysql:
     image: mysql:8.0.36
     container_name: mysql
-    env_file: ./env/mysql.env
+    env_file: env/mysql.env
     volumes:
       - mysql-data:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d
     restart: unless-stopped
+    ports:
+      - "3307:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-padmin"]
       interval: 5s
       timeout: 5s
       retries: 15
-    ports:
-      - "3306:3306"
+    networks:
+      - ecommerce-net
 
-  app:
-    container_name: ecommerce-app
+  app: &app_config
+    container_name: ecommerce-app-v2
     build:
       context: .
-    env_file: ./env/app.env
+      dockerfile: Dockerfile
+    env_file: env/app.env
     restart: unless-stopped
     depends_on:
       mysql:
         condition: service_healthy
     ports:
       - "8080:8080"
+    networks:
+      - ecommerce-net
+
+  app2:
+    <<: *app_config
+    container_name: ecommerce-app-v3
+    env_file: env/app2.env
+    ports:
+      - "8082:8080"
+
+  redis:
+    image: redis:7.2.4
+    container_name: redis
+    restart: unless-stopped
+    networks:
+      - ecommerce-net
+
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    networks:
+      - ecommerce-net
 
 volumes:
   mysql-data:
+
+networks:
+  ecommerce-net:
+    driver: bridge
