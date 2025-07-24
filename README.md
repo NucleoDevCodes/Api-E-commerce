@@ -154,3 +154,56 @@ docker run -d \
   -p 8080:8080 \
   api-ecommerce
 ````
+
+### 📚 Endpoints Principais
+#### Base URL: http://localhost:8080
+
+## 🔐 Autenticação / Usuário
+Método	Rota	Descrição
+POST	/login	Login 
+POST	/register	Criar novo usuário
+PUT	/alterar-senha	Alterar senha
+GET	/usuario/{id}	Buscar dados do usuário
+PUT	/usuario/{id}	Atualizar usuário
+DELETE	/usuario/{id}	Excluir usuário
+
+## 📦 Produtos
+Leitura
+Método	Rota	Descrição
+GET	/produtos	Listar todos
+GET	/produtos/{id}	Detalhar produto
+GET	/produtos/buscarNome	Buscar por nome
+GET	/produtos/buscarTipo	Filtrar por tipo
+GET	/produtos/ordenar	Ordenar (preço, etc.)
+GET	/produtos/existe	Verifica existência
+
+## Escrita
+Método	Rota	Descrição
+POST	/produtos	Criar produto
+PUT	/produtos/{id}	Atualizar produto
+DELETE	/produtos/{id}	Excluir produto
+
+## 🛒 Carrinho
+Método	Rota	Descrição
+GET	/carrinho	Exibir itens
+POST	/carrinho/itens	Adicionar item
+DELETE	/carrinho/itens/{produtoId}	Remover item
+
+## ❤️ Favoritos
+Método	Rota	Descrição
+GET	/favoritos	Listar favoritos
+POST	/favoritos	Marcar como favorito
+DELETE	/favoritos/{produtoId}	Desfavoritar produto
+GET	/favoritos/recomendacoes	Sugerir produtos
+
+## 📦 Pedidos
+Método	Rota	Descrição
+POST	/checkout	Criar pedido
+GET	/checkout/usuario	Listar pedidos
+
+## 💳 Pagamentos
+Método	Rota	Descrição
+POST	/pagamentos/{pedidoId}	Criar pagamento
+GET	/pagamentos/{pedidoId}	Consultar status do pagamento
+
+Nota: É necessário estar logado para acessar os endpoints protegidos — com exceção dos de registro e login.
