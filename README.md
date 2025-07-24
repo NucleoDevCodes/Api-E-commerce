@@ -159,51 +159,81 @@ docker run -d \
 #### Base URL: http://localhost:8080
 
 ## 🔐 Autenticação / Usuário
-Método	Rota	Descrição
+#### Método	Rota	Descrição
 POST	/login	Login 
+<br>
 POST	/register	Criar novo usuário
+<br>
 PUT	/alterar-senha	Alterar senha
+<br>
 GET	/usuario/{id}	Buscar dados do usuário
+<br>
 PUT	/usuario/{id}	Atualizar usuário
+<br>
 DELETE	/usuario/{id}	Excluir usuário
+<br>
 
 ## 📦 Produtos
-Leitura
-Método	Rota	Descrição
+#### Leitura
+#### Método	Rota	Descrição
 GET	/produtos	Listar todos
+<br>
 GET	/produtos/{id}	Detalhar produto
+<br>
 GET	/produtos/buscarNome	Buscar por nome
+<br>
 GET	/produtos/buscarTipo	Filtrar por tipo
+<br>
 GET	/produtos/ordenar	Ordenar (preço, etc.)
+<br>
 GET	/produtos/existe	Verifica existência
-
-## Escrita
-Método	Rota	Descrição
+<br>
+####  Escrita
+#### Método	Rota	Descrição
+<br>
 POST	/produtos	Criar produto
+<br>
 PUT	/produtos/{id}	Atualizar produto
+<br>
 DELETE	/produtos/{id}	Excluir produto
+<br>
 
 ## 🛒 Carrinho
-Método	Rota	Descrição
+#### Método	Rota	Descrição
 GET	/carrinho	Exibir itens
+<br>
 POST	/carrinho/itens	Adicionar item
+<br>
 DELETE	/carrinho/itens/{produtoId}	Remover item
+<br>
 
 ## ❤️ Favoritos
-Método	Rota	Descrição
+#### Método	Rota	Descrição
+<br>
 GET	/favoritos	Listar favoritos
+<br>
 POST	/favoritos	Marcar como favorito
+<br>
 DELETE	/favoritos/{produtoId}	Desfavoritar produto
+<br>
 GET	/favoritos/recomendacoes	Sugerir produtos
+<br>
 
 ## 📦 Pedidos
-Método	Rota	Descrição
+#### Método	Rota	Descrição
 POST	/checkout	Criar pedido
+<br>
 GET	/checkout/usuario	Listar pedidos
+<br>
 
 ## 💳 Pagamentos
-Método	Rota	Descrição
+#### Método	Rota	Descrição
 POST	/pagamentos/{pedidoId}	Criar pagamento
+<br>
 GET	/pagamentos/{pedidoId}	Consultar status do pagamento
+<br>
 
 Nota: É necessário estar logado para acessar os endpoints protegidos — com exceção dos de registro e login.
+
+#### 📄 Licença
+Este projeto está licenciado sob a MIT License.
