@@ -39,8 +39,25 @@ services:
     ports:
       - "8082:8080"
 
+  redis:
+    image: redis:7.2.4
+    container_name: redis
+    restart: unless-stopped
+    networks:
+      - ecommerce-net
 
+  adminer:
+    image: adminer
+    container_name: adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    networks:
+      - ecommerce-net
 
 volumes:
   mysql-data:
 
+networks:
+  ecommerce-net:
+    driver: bridge
