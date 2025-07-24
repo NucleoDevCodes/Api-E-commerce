@@ -85,3 +85,21 @@ export SPRING_DATASOURCE_USERNAME=<DB_USER>
 export SPRING_DATASOURCE_PASSWORD=<DB_PASS>
 ````
 
+### 2. Redis (cache)
+Configure o Redis (caso deseje usar cache):
+
+
+```bash
+export SPRING_REDIS_HOST=<REDIS_HOST>
+export SPRING_REDIS_PORT=<REDIS_PORT>
+````
+
+### 3. Outras propriedades
+properties
+
+```bash
+spring.jpa.hibernate.ddl-auto=${DDL_AUTO:update}
+````
+Edite diretamente o application-prod.properties ou forneça via variável de ambiente.
+
+
