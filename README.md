@@ -62,3 +62,26 @@ API RESTful de um sistema de e‑commerce, desenvolvida com Spring Boot, que for
 <br>
 └── LICENSE
 <br>
+
+---
+
+## 🔧 Pré-requisitos
+
+- **JDK 17** ou superior  
+- **Maven** (ou usar o `mvnw`)  
+- **Docker** & **Docker Compose**
+
+---
+
+## ⚙️ Configuração
+
+### 1. Banco de dados
+
+Crie um banco MySQL (8+) e um usuário com permissão de leitura e escrita. Defina as variáveis de ambiente:
+
+```bash
+export SPRING_DATASOURCE_URL=jdbc:mysql://<HOST>:<PORT>/<DB_NAME>
+export SPRING_DATASOURCE_USERNAME=<DB_USER>
+export SPRING_DATASOURCE_PASSWORD=<DB_PASS>
+````
+
