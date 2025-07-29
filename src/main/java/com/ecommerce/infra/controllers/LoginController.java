@@ -115,6 +115,18 @@ public class LoginController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request, @AuthenticationPrincipal Users requester) {
+        if (requester == null) {
+            logger.warn("Tentativa de logout sem usuário autenticado.");
+            throw new UnauthorizedActionException("Usuário precisa estar autenticado para realizar logout.");
+        }
+
+        logger.info("Logout realizado para o usuário: {}", requester.getEmail());
+        request.getSession().invalidate();
+        return ResponseEntity.noContent().build();
+    }
+
 
     @GetMapping("/usuario/{id}")
     public ResponseEntity<DataPublicProfile> getPublicProfile(@PathVariable("id") Long id) {
