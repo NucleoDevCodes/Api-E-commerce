@@ -45,6 +45,10 @@ public class ServiceCart {
             return createCartForUser(userId);
         });
 
+        if (cart.getItems() == null) {
+            cart.setItems(new ArrayList<>());
+        }
+
         var product = productRepository.findById(request.productId())
                 .orElseThrow(() -> {
                     logger.warn("Produto {} não encontrado", request.productId());
