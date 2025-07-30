@@ -1,16 +1,15 @@
 services:
-  mysql:
-    image: mysql:8.0.36
-    container_name: mysql
-    env_file: env/mysql.env
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    env_file: env/postgres.env
     volumes:
-      - mysql-data:/var/lib/mysql
-      - ./init:/docker-entrypoint-initdb.d
+      - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
     ports:
-      - "3307:3306"
+      - "5432:5432"
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-padmin"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 15
@@ -25,7 +24,7 @@ services:
     env_file: env/app.env
     restart: unless-stopped
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
     ports:
       - "8080:8080"
@@ -56,7 +55,7 @@ services:
       - ecommerce-net
 
 volumes:
-  mysql-data:
+  postgres-data:
 
 networks:
   ecommerce-net:
