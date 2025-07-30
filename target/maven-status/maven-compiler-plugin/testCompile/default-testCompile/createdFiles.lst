@@ -1,0 +1,8 @@
+com\ecommerce\aplication\services\ServiceFavoriteProductsTest.class
+com\ecommerce\aplication\services\ServiceProductsWriteTest.class
+com\ecommerce\aplication\services\ServiceUsersTest.class
+com\ecommerce\aplication\services\ServicePaymentTest.class
+com\ecommerce\aplication\services\ServiceProductReadTest.class
+com\ecommerce\aplication\services\ServiceCartTest.class
+com\ecommerce\aplication\services\ServiceOrdersTest.class
+com\ecommerce\aplication\services\ServiceAuthTest.class
