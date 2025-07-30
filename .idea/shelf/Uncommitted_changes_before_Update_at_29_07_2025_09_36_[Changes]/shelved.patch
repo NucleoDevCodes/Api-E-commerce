@@ -1,0 +1,19 @@
+Index: src/main/resources/application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/application.properties b/src/main/resources/application.properties
+new file mode 100644
+--- /dev/null	(date 1753277292803)
++++ b/src/main/resources/application.properties	(date 1753277292803)
+@@ -0,0 +1,9 @@
++spring.datasource.url=jdbc:mysql://127.0.0.1:3306/ecommerceapi
++spring.datasource.username=root
++spring.datasource.password=admin
++spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
++
++spring.jpa.hibernate.ddl-auto=update
++spring.jpa.show-sql=true
++spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
++
