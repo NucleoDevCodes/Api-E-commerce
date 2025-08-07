@@ -13,5 +13,7 @@ public record DataProducts(   String name,
                               CategoryType type,
                               Integer quant,
                               List<String> sizes,
-                              List<String> colors) {
+                              List<String> colors,
+                              String imageUrl
+) {
 }

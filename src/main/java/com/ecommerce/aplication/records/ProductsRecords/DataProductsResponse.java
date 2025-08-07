@@ -13,5 +13,7 @@ public record DataProductsResponse(Long id,
                                    CategoryItem item,
                                    CategoryType type,
                                    List<String> sizes,
-                                   List<String> colors) {
+                                   List<String> colors,
+                                   String imageUrl
+) {
 }
