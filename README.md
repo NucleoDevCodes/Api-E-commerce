@@ -80,7 +80,7 @@ API RESTful de um sistema de e‑commerce, desenvolvida com Spring Boot, que for
 Crie um banco Postegre (17+) e um usuário com permissão de leitura e escrita. Defina as variáveis de ambiente:
 
 ```bash
-export SPRING_DATASOURCE_URL=jdbc:mysql://<HOST>:<PORT>/<DB_NAME>
+export SPRING_DATASOURCE_URL=jdbc:postegre://<HOST>:<PORT>/<DB_NAME>
 export SPRING_DATASOURCE_USERNAME=<DB_USER>
 export SPRING_DATASOURCE_PASSWORD=<DB_PASS>
 ````
@@ -148,7 +148,7 @@ docker run -d \
   --name api-ecommerce \
   --network ecommerce-net \
   -e SPRING_PROFILES_ACTIVE=prod \
-  -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ecommerce \
+  -e SPRING_DATASOURCE_URL=jdbc:postegre://postegre:3306/ecommerce \
   -e SPRING_DATASOURCE_USERNAME=user \
   -e SPRING_DATASOURCE_PASSWORD=senha \
   -p 8080:8080 \
