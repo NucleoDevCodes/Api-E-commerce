@@ -34,7 +34,8 @@ public class ServiceProductRead {
                 product.getItem(),
                 product.getType(),
                 product.getSizes(),
-                product.getColors()
+                product.getColors(),
+                product.getImageUrl()
         );
     }
 

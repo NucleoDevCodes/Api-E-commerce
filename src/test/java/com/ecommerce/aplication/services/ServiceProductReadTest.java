@@ -46,6 +46,7 @@ class ServiceProductReadTest {
         p.setType(CategoryType.CALÇADOS);
         p.setSizes(List.of("M", "G"));
         p.setColors(List.of("AZUL", "PRETO"));
+        p.setImageUrl("http://img.com/produto.jpg");
         return p;
     }
 
@@ -58,6 +59,7 @@ class ServiceProductReadTest {
 
         assertEquals(1L, response.id());
         assertEquals("Tênis Azul", response.name());
+        assertEquals("http://img.com/produto.jpg", response.imageUrl());
     }
 
     @Test
@@ -78,8 +80,8 @@ class ServiceProductReadTest {
 
         var result = service.findAll(0);
         assertEquals(2, result.getContent().size());
+        assertEquals("http://img.com/produto.jpg", result.getContent().get(0).imageUrl());
     }
-
     @Test
     void findByItem_Success() {
         ProductModel p = createProduct(1L, "Produto1");
