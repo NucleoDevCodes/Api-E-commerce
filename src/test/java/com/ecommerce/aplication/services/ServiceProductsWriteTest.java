@@ -47,11 +47,12 @@ class ServiceProductsWriteTest {
                 CategoryType.CALÇADOS,
                 10,
                 List.of("M"),
-                List.of("AZUL")
+                List.of("AZUL"),
+                "https://cdn.imagens.com/tenis.jpg"
         );
     }
 
-    private ProductModel createProduct(Long id, String name, List<String> sizes, List<String> colors) {
+    private ProductModel createProduct(Long id, String name, List<String> sizes, List<String> colors, String imageUrl) {
         ProductModel p = new ProductModel();
         p.setId(id);
         p.setName(name);
@@ -61,6 +62,7 @@ class ServiceProductsWriteTest {
         p.setType(CategoryType.CALÇADOS);
         p.setSizes(sizes);
         p.setColors(colors);
+        p.setImageUrl(imageUrl);
         return p;
     }
 
@@ -80,6 +82,7 @@ class ServiceProductsWriteTest {
         assertNotNull(response);
         assertEquals(1L, response.id());
         assertEquals(data.name(), response.name());
+        assertEquals(data.imageUrl(), response.imageUrl());
         verify(serviceAsync).updateRecommendations(any());
     }
 
@@ -87,7 +90,7 @@ class ServiceProductsWriteTest {
     void createProduct_DuplicateThrows() {
         DataProducts data = createValidData();
 
-        ProductModel existing = createProduct(1L, data.name(), data.sizes(), data.colors());
+        ProductModel existing = createProduct(1L, data.name(), data.sizes(), data.colors(), data.imageUrl());
 
         when(repository.findAll()).thenReturn(List.of(existing));
 
@@ -105,7 +108,8 @@ class ServiceProductsWriteTest {
                 null,
                 0,
                 List.of(),
-                List.of()
+                List.of(),
+                ""
         );
 
         BusinessRuleException ex = assertThrows(BusinessRuleException.class, () -> service.create(invalidData));
@@ -116,7 +120,7 @@ class ServiceProductsWriteTest {
     void updateProduct_Success() {
         Long id = 1L;
         DataProducts data = createValidData();
-        ProductModel existing = createProduct(id, "OldName", List.of("M"), List.of("AZUL"));
+        ProductModel existing = createProduct(id, "OldName", List.of("M"), List.of("AZUL"), data.imageUrl());
 
         when(repository.findById(id)).thenReturn(Optional.of(existing));
         when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -124,6 +128,7 @@ class ServiceProductsWriteTest {
         DataProductsResponse response = service.update(id, data);
 
         assertEquals(data.name(), response.name());
+        assertEquals(data.imageUrl(), response.imageUrl());
         verify(serviceAsync).updateRecommendations(any());
     }
 
@@ -137,7 +142,7 @@ class ServiceProductsWriteTest {
 
     @Test
     void deleteProduct_Success() {
-        ProductModel existing = createProduct(1L, "Nome", List.of("M"), List.of("AZUL"));
+        ProductModel existing = createProduct(1L, "Nome", List.of("M"), List.of("AZUL"), "https://cdn.imagens.com/tenis.jpg");
         when(repository.findById(1L)).thenReturn(Optional.of(existing));
 
         service.delete(1L);
@@ -156,10 +161,10 @@ class ServiceProductsWriteTest {
     @Test
     void normalizeList_EmptyOrNull_Throws() {
         BusinessRuleException ex1 = assertThrows(BusinessRuleException.class, () -> service.create(
-                new DataProducts("Test", BigDecimal.valueOf(10.0), "Desc", CategoryItem.CAMISETA, CategoryType.MASCULINO, 1, null, List.of("M"))
+                new DataProducts("Test", BigDecimal.valueOf(10.0), "Desc", CategoryItem.CAMISETA, CategoryType.MASCULINO, 1, null, List.of("M"), "url")
         ));
         BusinessRuleException ex2 = assertThrows(BusinessRuleException.class, () -> service.create(
-                new DataProducts("Test", BigDecimal.valueOf(10.0), "Desc", CategoryItem.CAMISETA, CategoryType.MASCULINO, 1, List.of(), List.of("M"))
+                new DataProducts("Test", BigDecimal.valueOf(10.0), "Desc", CategoryItem.CAMISETA, CategoryType.MASCULINO, 1, List.of(), List.of("M"), "url")
         ));
 
         assertTrue(ex1.getMessage().contains("não pode estar vazia"));
