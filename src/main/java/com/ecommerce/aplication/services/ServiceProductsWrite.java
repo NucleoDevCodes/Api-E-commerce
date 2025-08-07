@@ -35,7 +35,8 @@ public class ServiceProductsWrite {
                 product.getItem(),
                 product.getType(),
                 product.getSizes(),
-                product.getColors()
+                product.getColors(),
+                product.getImageUrl()
         );
     }
 
@@ -65,6 +66,7 @@ public class ServiceProductsWrite {
         product.setColors(normalizedColors);
         product.setSizes(normalizedSizes);
         product.setQuant(data.quant());
+        product.setImageUrl(data.imageUrl());
 
         ProductModel saved = repository.save(product);
 
@@ -96,6 +98,7 @@ public class ServiceProductsWrite {
         existing.setItem(data.item());
         existing.setType(data.type());
         existing.setQuant(data.quant());
+        existing.setImageUrl(data.imageUrl());
 
         ProductModel saved = repository.save(existing);
         logger.info("Produto ID {} atualizado com sucesso", id);

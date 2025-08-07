@@ -60,6 +60,9 @@ public class ProductModel {
     @Column(name = "cor")
     private List<String> colors;
 
+    @Column(name = "imagem_url")
+    private String imageUrl;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FavoriteProducts> favoritedByUsers = new ArrayList<>();
 
@@ -71,5 +74,6 @@ public class ProductModel {
         this.type = data.type();
         this.sizes = data.sizes();
         this.colors = data.colors();
+        this.imageUrl = data.imageUrl();
     }
 }
