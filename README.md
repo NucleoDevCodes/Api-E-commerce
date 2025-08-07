@@ -12,7 +12,7 @@ API RESTful de um sistema de e‑commerce, desenvolvida com Spring Boot, que for
   - Spring Data JPA  
   - Spring Security  
 - **Hibernate (JPA)**  
-- **MySQL 8**  
+- **Postegre 17**  
 - **Redis** (cache)  
 - **Maven Wrapper** (`mvnw`)  
 - **Docker & Docker Compose**  
@@ -77,7 +77,7 @@ API RESTful de um sistema de e‑commerce, desenvolvida com Spring Boot, que for
 
 ### 1. Banco de dados
 
-Crie um banco MySQL (8+) e um usuário com permissão de leitura e escrita. Defina as variáveis de ambiente:
+Crie um banco Postegre (17+) e um usuário com permissão de leitura e escrita. Defina as variáveis de ambiente:
 
 ```bash
 export SPRING_DATASOURCE_URL=jdbc:mysql://<HOST>:<PORT>/<DB_NAME>
@@ -120,12 +120,12 @@ java -jar target/apiecommerce-1.0.0.jar --spring.profiles.active=prod
 Edite o docker-compose.yml ou crie um arquivo env/mysql.env:
 
 ```bash
-MYSQL_ROOT_PASSWORD=admin
-MYSQL_DATABASE=ecommerce
-MYSQL_USER=user
-MYSQL_PASSWORD=senha
+POSTEGRE_ROOT_PASSWORD=admin
+POSTEGRE_DATABASE=ecommerce
+POSTEGRE_USER=user
+POSTEGRE_PASSWORD=senha
 
-SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/ecommerce
+SPRING_DATASOURCE_URL=jdbc:postegre://postegre:3306/ecommerce
 SPRING_DATASOURCE_USERNAME=user
 SPRING_DATASOURCE_PASSWORD=senha
 
